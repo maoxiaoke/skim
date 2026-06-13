@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 728" width="960" height="728">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');
+    text { font-family: 'Geist', system-ui, sans-serif; }
+    .serif { font-family: 'Instrument Serif', Georgia, 'Songti SC', serif; }
+    .mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+  </style>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#6E6E73"/>
+    </marker>
+    <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#007AFF"/>
+    </marker>
+  </defs>
+
+  <!-- background -->
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+
+  <!-- header -->
+  <text x="48" y="44" class="mono" font-size="8" fill="#9A9AA0" letter-spacing="0.16em">SKIM · TECH DESIGN · 01</text>
+  <text x="48" y="80" class="serif" font-size="28" fill="#1A1A1A">系统架构分层</text>
+  <text x="48" y="104" font-size="12" fill="#6E6E73">React UI · 纯函数领域核心 · Rust 薄层 — 所有破坏性能力收敛在 Rust 侧</text>
+
+  <!-- ===== arrows first (behind boxes) ===== -->
+  <!-- vertical stack inside webview -->
+  <line x1="480" y1="196" x2="480" y2="212" stroke="#6E6E73" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="480" y1="276" x2="480" y2="292" stroke="#6E6E73" stroke-width="1" marker-end="url(#arrow)"/>
+  <!-- IPC -->
+  <line x1="356" y1="340" x2="356" y2="416" stroke="#6E6E73" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="604" y1="340" x2="604" y2="416" stroke="#6E6E73" stroke-width="1" marker-end="url(#arrow)"/>
+  <!-- to disk -->
+  <line x1="300" y1="492" x2="244" y2="556" stroke="#6E6E73" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="380" y1="492" x2="456" y2="556" stroke="#6E6E73" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="432" y1="492" x2="668" y2="556" stroke="#6E6E73" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="640" y1="492" x2="704" y2="556" stroke="#6E6E73" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- arrow labels (masked) -->
+  <rect x="436" y="364" width="88" height="14" rx="2" fill="#FFFFFF"/>
+  <text x="480" y="374" class="mono" font-size="8" fill="#9A9AA0" text-anchor="middle" letter-spacing="0.08em">TAURI IPC</text>
+  <rect x="220" y="516" width="56" height="12" rx="2" fill="#FFFFFF"/>
+  <text x="248" y="525" class="mono" font-size="8" fill="#9A9AA0" text-anchor="middle" letter-spacing="0.06em">PATCH</text>
+  <rect x="380" y="516" width="104" height="12" rx="2" fill="#FFFFFF"/>
+  <text x="432" y="525" class="mono" font-size="8" fill="#9A9AA0" text-anchor="middle" letter-spacing="0.06em">BACKUP·ARCHIVE</text>
+  <rect x="512" y="524" width="84" height="12" rx="2" fill="#FFFFFF"/>
+  <text x="554" y="533" class="mono" font-size="8" fill="#9A9AA0" text-anchor="middle" letter-spacing="0.06em">MOVE·TRASH</text>
+  <rect x="636" y="500" width="76" height="12" rx="2" fill="#FFFFFF"/>
+  <text x="674" y="509" class="mono" font-size="8" fill="#9A9AA0" text-anchor="middle" letter-spacing="0.06em">SCAN·READ</text>
+
+  <!-- ===== boundary regions ===== -->
+  <rect x="200" y="128" width="560" height="232" rx="8" fill="rgba(26,26,26,0.02)" stroke="rgba(26,26,26,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+  <rect x="212" y="122" width="148" height="12" fill="#FFFFFF"/>
+  <text x="216" y="132" class="mono" font-size="8" fill="#6E6E73" letter-spacing="0.14em">WEBVIEW · TYPESCRIPT</text>
+
+  <rect x="200" y="400" width="560" height="116" rx="8" fill="rgba(26,26,26,0.02)" stroke="rgba(26,26,26,0.30)" stroke-width="1" stroke-dasharray="4,4"/>
+  <rect x="212" y="394" width="76" height="12" fill="#FFFFFF"/>
+  <text x="216" y="404" class="mono" font-size="8" fill="#6E6E73" letter-spacing="0.14em">RUST CORE</text>
+
+  <!-- ===== nodes ===== -->
+  <!-- UI -->
+  <rect x="240" y="148" width="480" height="48" rx="6" fill="#FFFFFF"/>
+  <rect x="240" y="148" width="480" height="48" rx="6" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="1"/>
+  <text x="480" y="168" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">UI — React + Tailwind</text>
+  <text x="480" y="184" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">design.md tokens · i18n en / zh-CN</text>
+
+  <!-- Domain core (FOCAL) -->
+  <rect x="240" y="216" width="480" height="60" rx="6" fill="#FFFFFF"/>
+  <rect x="240" y="216" width="480" height="60" rx="6" fill="rgba(0,122,255,0.08)" stroke="#007AFF" stroke-width="1"/>
+  <text x="480" y="240" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">Domain Core — 纯函数，零 IO</text>
+  <text x="480" y="258" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">parse-skill · resolve-state · plan-ops · diff-config</text>
+
+  <!-- IO adapter -->
+  <rect x="240" y="296" width="480" height="44" rx="6" fill="#FFFFFF"/>
+  <rect x="240" y="296" width="480" height="44" rx="6" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="1"/>
+  <text x="480" y="314" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">IO Adapter</text>
+  <text x="480" y="330" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">invoke() · plugin api · 执行领域层产出的操作计划</text>
+
+  <!-- Rust commands -->
+  <rect x="240" y="420" width="232" height="72" rx="6" fill="#FFFFFF"/>
+  <rect x="240" y="420" width="232" height="72" rx="6" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="1"/>
+  <text x="356" y="448" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">Commands（薄层）</text>
+  <text x="356" y="466" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">trash · toml_edit · atomic-write</text>
+
+  <!-- plugin-fs -->
+  <rect x="488" y="420" width="232" height="72" rx="6" fill="#FFFFFF"/>
+  <rect x="488" y="420" width="232" height="72" rx="6" fill="rgba(26,26,26,0.03)" stroke="rgba(26,26,26,0.30)" stroke-width="1"/>
+  <text x="604" y="448" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">tauri-plugin-fs</text>
+  <text x="604" y="466" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">scoped 只读：扫描与读取</text>
+
+  <!-- disk stores -->
+  <rect x="120" y="556" width="224" height="64" rx="6" fill="#FFFFFF"/>
+  <rect x="120" y="556" width="224" height="64" rx="6" fill="rgba(26,26,26,0.05)" stroke="#6E6E73" stroke-width="1"/>
+  <text x="232" y="582" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">Agent 配置</text>
+  <text x="232" y="600" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">settings.json · config.toml</text>
+
+  <rect x="368" y="556" width="224" height="64" rx="6" fill="#FFFFFF"/>
+  <rect x="368" y="556" width="224" height="64" rx="6" fill="rgba(26,26,26,0.05)" stroke="#6E6E73" stroke-width="1"/>
+  <text x="480" y="582" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">~/.skim</text>
+  <text x="480" y="600" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">archive/ · backups/ · config</text>
+
+  <rect x="616" y="556" width="224" height="64" rx="6" fill="#FFFFFF"/>
+  <rect x="616" y="556" width="224" height="64" rx="6" fill="rgba(26,26,26,0.05)" stroke="#6E6E73" stroke-width="1"/>
+  <text x="728" y="582" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">Skills 目录</text>
+  <text x="728" y="600" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">~/.claude · ~/.codex · ~/.agents · 项目</text>
+
+  <!-- ===== legend ===== -->
+  <line x1="48" y1="668" x2="912" y2="668" stroke="rgba(26,26,26,0.10)" stroke-width="0.8"/>
+  <text x="48" y="692" class="mono" font-size="8" fill="#6E6E73" letter-spacing="0.14em">LEGEND</text>
+  <rect x="128" y="684" width="12" height="12" rx="2" fill="rgba(0,122,255,0.08)" stroke="#007AFF" stroke-width="1"/>
+  <text x="148" y="694" font-size="10" fill="#6E6E73">领域核心（纯函数，未来 CLI 复用）</text>
+  <rect x="368" y="684" width="12" height="12" rx="2" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="1"/>
+  <text x="388" y="694" font-size="10" fill="#6E6E73">组件</text>
+  <rect x="448" y="684" width="12" height="12" rx="2" fill="rgba(26,26,26,0.05)" stroke="#6E6E73" stroke-width="1"/>
+  <text x="468" y="694" font-size="10" fill="#6E6E73">磁盘数据</text>
+  <rect x="552" y="684" width="12" height="12" rx="2" fill="none" stroke="rgba(26,26,26,0.30)" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="572" y="694" font-size="10" fill="#6E6E73">进程/信任边界</text>
+</svg>

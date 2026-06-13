@@ -1,0 +1,182 @@
+{
+  "app": {
+    "name": "Skim"
+  },
+  "nav": {
+    "allSkills": "All Skills",
+    "store": "Store",
+    "archive": "Archive",
+    "agents": "Agents",
+    "projects": "Projects",
+    "addProject": "Add project…",
+    "settings": "Settings",
+    "toggleSidebar": "Toggle sidebar"
+  },
+  "agent": {
+    "claude": "Claude Code",
+    "codex": "Codex"
+  },
+  "scope": {
+    "user": "User",
+    "project": "Project",
+    "bundled": "Bundled"
+  },
+  "banner": {
+    "corrupt": "Could not parse {{files}}. The affected agent is read-only until the file is fixed.",
+    "error": "Refresh failed: {{message}}"
+  },
+  "hint": {
+    "manageInStore": "Archive & delete for Store skills live in the Store.",
+    "openStore": "Open Store"
+  },
+  "warn": {
+    "codexLoaded_one": "Codex is currently loading {{count}} of these skills — it will lose it.",
+    "codexLoaded_other": "Codex is currently loading {{count}} of these skills — it will lose them.",
+    "brokenLinks_one": "{{count}} symlink points here. It will break and be removed:",
+    "brokenLinks_other": "{{count}} symlinks point here. They will break and be removed:"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Search skills…",
+    "select": "Select",
+    "refresh": "Refresh"
+  },
+  "filter": {
+    "status": "Status: {{value}}",
+    "ariaLabel": "Filter by status",
+    "all": "All",
+    "on": "On",
+    "off": "Off",
+    "issues": "Issues"
+  },
+  "time": {
+    "justNow": "Updated just now",
+    "minAgo_one": "Updated {{count}} min ago",
+    "minAgo_other": "Updated {{count}} min ago",
+    "hoursAgo_one": "Updated {{count}} h ago",
+    "hoursAgo_other": "Updated {{count}} h ago"
+  },
+  "empty": {
+    "skills": "No skills found",
+    "skillsHint": "Try a different search or filter."
+  },
+  "status": {
+    "on": "On",
+    "name-only": "Name-only",
+    "user-invocable-only": "User-invocable only",
+    "off": "Off"
+  },
+  "statusDesc": {
+    "on": "Fully available, description loaded into context",
+    "name-only": "Saves context, Claude sees only the name",
+    "user-invocable-only": "Hidden from Claude — you can still invoke it with /name",
+    "off": "Completely hidden from Claude"
+  },
+  "badge": {
+    "duplicate": "Duplicate",
+    "duplicateTitle": "Identical to the user-level copy — this one is redundant",
+    "conflict": "Conflict",
+    "conflictTitle": "A skill with the same name exists at user level with different content",
+    "strayFile": "Stray file",
+    "metadataIssue": "Metadata issue"
+  },
+  "row": {
+    "strayDesc": "Loose file, not a skill directory",
+    "linkTitle": "Symlink — points to {{path}}",
+    "noDescription": "No description",
+    "lockTitle": "Bundled skill — cannot be deleted",
+    "deleteStray": "Delete stray file"
+  },
+  "control": {
+    "autoTrigger": "Auto-trigger",
+    "statusFor": "Status for {{name}}",
+    "autoTriggerFor": "Auto-trigger for {{name}}"
+  },
+  "bulk": {
+    "selected_one": "{{count}} selected",
+    "selected_other": "{{count}} selected",
+    "selectOne": "Select {{name}}",
+    "selectGroup": "Select all in {{group}}",
+    "enable": "Enable",
+    "disable": "Disable",
+    "archive": "Archive",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  },
+  "drawer": {
+    "close": "Close details",
+    "details": "Details",
+    "name": "name",
+    "description": "description",
+    "status": "status",
+    "path": "path",
+    "linksTo": "links to",
+    "skillMd": "SKILL.md",
+    "noSkillMd": "No SKILL.md found.",
+    "files": "Files",
+    "total": "Total: {{size}} · {{count}} files",
+    "archive": "Archive",
+    "delete": "Delete",
+    "reveal": "Reveal in Finder"
+  },
+  "archive": {
+    "title": "Archive",
+    "empty": "Nothing archived",
+    "emptyHint": "Archived skills are moved to ~/.skim/archive and can be restored anytime.",
+    "restore": "Restore",
+    "deleteForever": "Delete permanently",
+    "missing": "Missing",
+    "archivedAt": "Archived {{time}}",
+    "conflictTitle": "Restore conflict",
+    "conflictBody": "A folder already exists at {{path}}. Overwrite it, or keep both by restoring under a new name.",
+    "keepBoth": "Keep both",
+    "overwrite": "Overwrite",
+    "deleteTitle": "Delete “{{name}}” permanently?",
+    "deleteBody": "Moves the archived copy to Trash. You can restore it from there."
+  },
+  "settings": {
+    "title": "Settings",
+    "projects": "Projects",
+    "noProjects": "No projects yet. Add one from the sidebar.",
+    "remove": "Remove",
+    "skillCount_one": "{{count}} skill",
+    "skillCount_other": "{{count}} skills",
+    "originManual": "Manual",
+    "originClaude": "Auto · Claude",
+    "originCodex": "Auto · Codex",
+    "refresh": "Refresh",
+    "autoRefresh": "Auto refresh",
+    "autoRefreshDesc": "Rescan skills while the window is focused.",
+    "interval": "Interval",
+    "intervalDesc": "Seconds between refreshes (10–600).",
+    "advanced": "Advanced",
+    "advancedMode": "Advanced mode",
+    "advancedModeDesc": "Expose Claude's four visibility levels & Codex auto-trigger control",
+    "language": "Language",
+    "languageDesc": "UI language for Skim."
+  },
+  "lang": {
+    "auto": "Auto (system)",
+    "en": "English",
+    "zh-CN": "简体中文"
+  },
+  "confirm": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "archiveTitleOne": "Archive “{{name}}”?",
+    "archiveTitle": "Archive {{count}} skills?",
+    "archiveBody": "Moves the folder to ~/.skim/archive. You can restore it anytime from the Archive tab.",
+    "deleteTitleOne": "Delete “{{name}}”?",
+    "deleteTitle": "Delete {{count}} skills?",
+    "deleteBody": "Moves to Trash. You can restore from there."
+  },
+  "busy": {
+    "delete": "Deleting… {{done}} / {{total}}",
+    "archive": "Archiving… {{done}} / {{total}}",
+    "status": "Applying… {{done}} / {{total}}"
+  },
+  "toast": {
+    "failed_one": "{{count}} operation failed",
+    "failed_other": "{{count}} operations failed",
+    "dismiss": "Dismiss"
+  }
+}

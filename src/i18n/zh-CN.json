@@ -1,0 +1,175 @@
+{
+  "app": {
+    "name": "Skim"
+  },
+  "nav": {
+    "allSkills": "全部技能",
+    "store": "总仓",
+    "archive": "归档",
+    "agents": "代理",
+    "projects": "项目",
+    "addProject": "添加项目…",
+    "settings": "设置",
+    "toggleSidebar": "收起/展开侧栏"
+  },
+  "agent": {
+    "claude": "Claude Code",
+    "codex": "Codex"
+  },
+  "scope": {
+    "user": "用户",
+    "project": "项目",
+    "bundled": "内置"
+  },
+  "banner": {
+    "corrupt": "无法解析 {{files}}，受影响的代理已降级为只读，修复该文件后恢复。",
+    "error": "刷新失败：{{message}}"
+  },
+  "hint": {
+    "manageInStore": "总仓技能的删除与归档请前往总仓操作。",
+    "openStore": "前往总仓"
+  },
+  "warn": {
+    "codexLoaded_other": "Codex 正在加载其中 {{count}} 个技能，操作后将不可用。",
+    "brokenLinks_other": "以下 {{count}} 处软链指向该技能，将失效并被一并清理："
+  },
+  "toolbar": {
+    "searchPlaceholder": "搜索技能…",
+    "select": "选择",
+    "refresh": "刷新"
+  },
+  "filter": {
+    "status": "状态：{{value}}",
+    "ariaLabel": "按状态筛选",
+    "all": "全部",
+    "on": "开启",
+    "off": "关闭",
+    "issues": "异常"
+  },
+  "time": {
+    "justNow": "刚刚更新",
+    "minAgo_other": "{{count}} 分钟前更新",
+    "hoursAgo_other": "{{count}} 小时前更新"
+  },
+  "empty": {
+    "skills": "未找到技能",
+    "skillsHint": "试试其他搜索或筛选条件。"
+  },
+  "status": {
+    "on": "开启",
+    "name-only": "仅名称",
+    "user-invocable-only": "仅用户可调用",
+    "off": "关闭"
+  },
+  "statusDesc": {
+    "on": "完全可用，描述会加载进上下文",
+    "name-only": "节省上下文，Claude 只能看到名称",
+    "user-invocable-only": "对 Claude 隐藏——你仍可通过 /名称 调用",
+    "off": "对 Claude 完全隐藏"
+  },
+  "badge": {
+    "duplicate": "重复",
+    "duplicateTitle": "与用户级内容完全相同——这份是冗余拷贝",
+    "conflict": "冲突",
+    "conflictTitle": "用户级存在同名技能但内容不一致",
+    "strayFile": "游离文件",
+    "metadataIssue": "元数据异常"
+  },
+  "row": {
+    "strayDesc": "游离文件，不是技能目录",
+    "linkTitle": "软链接 — 指向 {{path}}",
+    "noDescription": "暂无描述",
+    "lockTitle": "内置技能——不可删除",
+    "deleteStray": "删除游离文件"
+  },
+  "control": {
+    "autoTrigger": "自动触发",
+    "statusFor": "{{name}} 的状态",
+    "autoTriggerFor": "{{name}} 的自动触发"
+  },
+  "bulk": {
+    "selected_other": "已选 {{count}} 项",
+    "selectOne": "选择 {{name}}",
+    "selectGroup": "全选 {{group}}",
+    "enable": "启用",
+    "disable": "禁用",
+    "archive": "归档",
+    "delete": "删除",
+    "cancel": "取消"
+  },
+  "drawer": {
+    "close": "关闭详情",
+    "details": "详情",
+    "name": "名称",
+    "description": "描述",
+    "status": "状态",
+    "path": "路径",
+    "linksTo": "链接到",
+    "skillMd": "SKILL.md",
+    "noSkillMd": "未找到 SKILL.md。",
+    "files": "文件",
+    "total": "共 {{size}} · {{count}} 个文件",
+    "archive": "归档",
+    "delete": "删除",
+    "reveal": "在访达中显示"
+  },
+  "archive": {
+    "title": "归档",
+    "empty": "暂无归档",
+    "emptyHint": "已归档的技能会移动到 ~/.skim/archive，可随时恢复。",
+    "restore": "恢复",
+    "deleteForever": "永久删除",
+    "missing": "缺失",
+    "archivedAt": "归档于 {{time}}",
+    "conflictTitle": "恢复冲突",
+    "conflictBody": "原位置 {{path}} 已存在同名文件夹。可以覆盖它，或以新名称恢复以同时保留两者。",
+    "keepBoth": "保留两者",
+    "overwrite": "覆盖",
+    "deleteTitle": "确定永久删除“{{name}}”？",
+    "deleteBody": "将归档副本移入废纸篓，之后仍可从废纸篓恢复。"
+  },
+  "settings": {
+    "title": "设置",
+    "projects": "项目",
+    "noProjects": "还没有项目，可在侧边栏添加。",
+    "remove": "移除",
+    "skillCount_other": "{{count}} 个技能",
+    "originManual": "手动",
+    "originClaude": "自动 · Claude",
+    "originCodex": "自动 · Codex",
+    "refresh": "刷新",
+    "autoRefresh": "自动刷新",
+    "autoRefreshDesc": "窗口聚焦时自动重新扫描技能。",
+    "interval": "间隔",
+    "intervalDesc": "两次刷新之间的秒数（10–600）。",
+    "advanced": "高级",
+    "advancedMode": "高级模式",
+    "advancedModeDesc": "开放 Claude 的四档可见性与 Codex 自动触发控制",
+    "language": "语言",
+    "languageDesc": "Skim 界面语言。"
+  },
+  "lang": {
+    "auto": "跟随系统",
+    "en": "English",
+    "zh-CN": "简体中文"
+  },
+  "confirm": {
+    "cancel": "取消",
+    "confirm": "确认",
+    "archiveTitleOne": "归档“{{name}}”？",
+    "archiveTitle": "归档 {{count}} 个技能？",
+    "archiveBody": "移动到 ~/.skim/archive 留底，随时可从归档页恢复。",
+    "deleteTitleOne": "删除“{{name}}”？",
+    "deleteTitle": "删除 {{count}} 个技能？",
+    "deleteBody": "移入废纸篓，可从废纸篓恢复。"
+  },
+  "busy": {
+    "delete": "删除中… {{done}} / {{total}}",
+    "archive": "归档中… {{done}} / {{total}}",
+    "status": "应用中… {{done}} / {{total}}"
+  },
+  "toast": {
+    "failed_other": "{{count}} 个操作失败",
+    "dismiss": "关闭"
+  }
+}

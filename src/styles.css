@@ -1,0 +1,298 @@
+@import 'tailwindcss';
+
+/* design.md §1 — color tokens (single source of truth) */
+@theme {
+  --color-app: #ffffff;
+  --color-sidebar: #f7f7f8;
+  --color-hover: #f2f2f3;
+  --color-selected: #ececee;
+  --color-inset: #f6f6f7;
+  --color-border: #e5e5e7;
+  --color-divider: #e8e8ea;
+  --color-ink: #1a1a1a;
+  --color-ink-2: #6e6e73;
+  --color-ink-3: #9a9aa0;
+  --color-accent: #007aff;
+  --color-accent-soft: #eef6ff;
+  --color-warning: #e8590c;
+  --color-warning-soft: #fff1e8;
+  --color-toggle-off: #e9e9eb;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, 'PingFang SC', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius-card: 10px;
+  --radius-control: 6px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-app);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  cursor: default;
+}
+
+/* 滚动条：细、浅、贴边 —— 替代 WKWebView 默认的粗黑条 */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(26, 26, 26, 0.16);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(26, 26, 26, 0.28);
+}
+
+/* design.md §7 — visible focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* 强 ease-out（内置 ease-out 太弱，emil-design-eng）：起步快、收尾稳 */
+:root {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* design.md §6 — 浮层出现：150ms 透明度 + 4px 位移 + 轻微缩放（绝不从 scale(0) 出现） */
+@keyframes skim-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pop-in {
+  animation: skim-pop-in 150ms var(--ease-out-strong);
+}
+
+/* 模态：原点居中（不锚定触发器），稍慢于 popover */
+@keyframes skim-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-in {
+  animation: skim-modal-in 180ms var(--ease-out-strong);
+}
+
+@keyframes skim-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.overlay-in {
+  animation: skim-fade-in 150ms ease;
+}
+
+/* 详情抽屉：高频开合（一天几十次）→ 克制的 150ms 滑入 */
+@keyframes skim-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.drawer-in {
+  animation: skim-drawer-in 150ms var(--ease-out-strong);
+}
+
+/* 按压反馈（scale 固定 0.96，make-interfaces-feel-better §12）。
+   自带颜色过渡，替代 transition-colors，避免 transition-property 互相覆盖 */
+.pressable {
+  transition-property: color, background-color, border-color, transform;
+  transition-duration: 150ms;
+  transition-timing-function: var(--ease-out-strong);
+}
+
+.pressable:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* 小控件的最小命中区扩展（视觉尺寸不变） */
+.hit-extend {
+  position: relative;
+}
+
+.hit-extend::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+}
+
+/* 更快的 spinner：同样的加载时长，感知上更快（perceived performance） */
+@keyframes skim-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-fast {
+  animation: skim-spin 0.6s linear infinite;
+}
+
+.ease-strong {
+  transition-timing-function: var(--ease-out-strong);
+}
+
+/* DetailDrawer SKILL.md 渲染 — 最小 prose 覆盖（13px / 1.55，code 块 bg-inset 圆角） */
+.skillmd {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-ink);
+  user-select: text;
+  cursor: auto;
+  word-break: break-word;
+}
+
+.skillmd h1,
+.skillmd h2,
+.skillmd h3,
+.skillmd h4,
+.skillmd h5,
+.skillmd h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0.9em 0 0.4em;
+}
+
+.skillmd h1 {
+  font-size: 13px;
+}
+
+.skillmd h2 {
+  font-size: 12px;
+}
+
+.skillmd h3,
+.skillmd h4,
+.skillmd h5,
+.skillmd h6 {
+  font-size: 11px;
+}
+
+.skillmd > :first-child {
+  margin-top: 0;
+}
+
+.skillmd > :last-child {
+  margin-bottom: 0;
+}
+
+.skillmd p {
+  margin: 0 0 0.6em;
+}
+
+.skillmd ul,
+.skillmd ol {
+  margin: 0 0 0.6em;
+  padding-left: 1.3em;
+}
+
+.skillmd li {
+  margin-bottom: 0.2em;
+}
+
+.skillmd code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--color-inset);
+  border-radius: 4px;
+  padding: 1px 4px;
+}
+
+.skillmd pre {
+  background: var(--color-inset);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 0 0 0.8em;
+  overflow-x: auto;
+}
+
+.skillmd pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.skillmd a {
+  color: var(--color-accent);
+}
+
+.skillmd blockquote {
+  border-left: 2px solid var(--color-border);
+  margin: 0 0 0.6em;
+  padding-left: 10px;
+  color: var(--color-ink-2);
+}
+
+.skillmd hr {
+  border: 0;
+  border-top: 1px solid var(--color-divider);
+  margin: 0.8em 0;
+}
+
+.skillmd table {
+  border-collapse: collapse;
+  margin: 0 0 0.8em;
+}
+
+.skillmd th,
+.skillmd td {
+  border: 1px solid var(--color-divider);
+  padding: 3px 8px;
+  text-align: left;
+}
+
+.skillmd img {
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+
+  .pressable:active:not(:disabled) {
+    transform: none;
+  }
+}
