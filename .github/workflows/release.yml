@@ -1,0 +1,146 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-latest   # Apple Silicon
+            target: aarch64-apple-darwin
+            arch: aarch64
+          - runner: macos-13       # Intel
+            target: x86_64-apple-darwin
+            arch: x86_64
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend deps
+        run: pnpm install
+
+      - name: Import signing certificate
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          echo "$MACOS_CERTIFICATE" | base64 --decode > /tmp/certificate.p12
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security import /tmp/certificate.p12 -k build.keychain \
+            -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: \
+            -s -k "$KEYCHAIN_PASSWORD" build.keychain
+          security list-keychain -d user -s build.keychain
+
+      - name: Build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        run: pnpm tauri build --target ${{ matrix.target }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: skim-${{ matrix.arch }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+            src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz
+            src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz.sig
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download aarch64 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: skim-aarch64
+          path: artifacts/aarch64
+
+      - name: Download x86_64 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: skim-x86_64
+          path: artifacts/x86_64
+
+      - name: Generate latest.json
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          REPO="${{ github.repository }}"
+          TAG="${GITHUB_REF_NAME}"
+
+          ARM_TAR=$(ls artifacts/aarch64/*.app.tar.gz | head -1)
+          ARM_SIG=$(cat artifacts/aarch64/*.app.tar.gz.sig)
+          ARM_URL="https://github.com/$REPO/releases/download/$TAG/$(basename $ARM_TAR)"
+
+          X86_TAR=$(ls artifacts/x86_64/*.app.tar.gz | head -1)
+          X86_SIG=$(cat artifacts/x86_64/*.app.tar.gz.sig)
+          X86_URL="https://github.com/$REPO/releases/download/$TAG/$(basename $X86_TAR)"
+
+          cat > latest.json <<EOF
+          {
+            "version": "$VERSION",
+            "notes": "See full release notes at https://github.com/$REPO/releases/tag/$TAG",
+            "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "platforms": {
+              "darwin-aarch64": {
+                "url": "$ARM_URL",
+                "signature": "$ARM_SIG"
+              },
+              "darwin-x86_64": {
+                "url": "$X86_URL",
+                "signature": "$X86_SIG"
+              }
+            }
+          }
+          EOF
+          cat latest.json
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Skim ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            artifacts/aarch64/*.dmg
+            artifacts/aarch64/*.app.tar.gz
+            artifacts/aarch64/*.app.tar.gz.sig
+            artifacts/x86_64/*.dmg
+            artifacts/x86_64/*.app.tar.gz
+            artifacts/x86_64/*.app.tar.gz.sig
+            latest.json

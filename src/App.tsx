@@ -8,6 +8,7 @@ import DetailDrawer from './components/DetailDrawer';
 import SettingsView from './components/SettingsView';
 import Sidebar from './components/Sidebar';
 import SkillsView from './components/SkillsView';
+import UpdateBanner from './components/UpdateBanner';
 import { IconButton, IconX, shortenPath, Spinner } from './components/ui';
 import { useSkim } from './store';
 
@@ -24,6 +25,12 @@ export default function App() {
   // 启动刷新
   useEffect(() => {
     void useSkim.getState().refresh();
+  }, []);
+
+  // 启动时检查更新（延迟 3s，不阻塞首屏）
+  useEffect(() => {
+    const id = window.setTimeout(() => void useSkim.getState().checkUpdate(), 3000);
+    return () => window.clearTimeout(id);
   }, []);
 
   // 定时刷新：config.refresh.auto 为真且窗口聚焦时才执行
@@ -52,6 +59,7 @@ export default function App() {
       <Sidebar />
 
       <div className="relative flex min-w-0 flex-1 flex-col">
+        <UpdateBanner />
         {corruptConfigs.length > 0 && (
           <div role="alert" className="border-b border-divider bg-warning-soft px-6 py-2 text-[13px] leading-[1.55] text-warning">
             {t('banner.corrupt', {

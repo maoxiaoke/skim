@@ -33,6 +33,17 @@
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns"
-    ]
+    ],
+    "macOS": {
+      "signingIdentity": "Developer ID Application: Zuyu Jiao (8R73P9V5H8)"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "untrusted comment: minisign public key: FF2B7F80A43625A\nRWRaYkMK+LfyD9Ilkp9D6Ztze/iTxF7XLuX3EemTZ4lD4HPBXEZ4m9xs\n",
+      "endpoints": [
+        "https://github.com/maoxiaoke/skim/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

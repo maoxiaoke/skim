@@ -138,6 +138,14 @@
     "deleteTitle": "Delete “{{name}}” permanently?",
     "deleteBody": "Moves the archived copy to Trash. You can restore it from there."
   },
+  "update": {
+    "available": "Skim {{version}} is available",
+    "install": "Install & Relaunch",
+    "installing": "Installing…",
+    "dismiss": "Dismiss update banner",
+    "showNotes": "Release notes",
+    "hideNotes": "Hide notes"
+  },
   "settings": {
     "title": "Settings",
     "projects": "Projects",
@@ -157,7 +165,13 @@
     "advancedMode": "Advanced mode",
     "advancedModeDesc": "Expose Claude's four visibility levels & Codex auto-trigger control",
     "language": "Language",
-    "languageDesc": "UI language for Skim."
+    "languageDesc": "UI language for Skim.",
+    "updates": "Updates",
+    "checkUpdates": "Check for updates",
+    "checkUpdatesDesc": "Skim also checks automatically on launch.",
+    "checkNow": "Check now",
+    "checking": "Checking…",
+    "updateAvailable": "{{version}} is available — see the banner above."
   },
   "lang": {
     "auto": "Auto (system)",

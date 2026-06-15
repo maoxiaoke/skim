@@ -1,4 +1,4 @@
-// 设置视图：Projects / Refresh / Advanced / Language
+// 设置视图：Projects / Refresh / Advanced / Language / Updates
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,15 @@ export default function SettingsView() {
   const home = useSkim((s) => s.home);
   const removeProject = useSkim((s) => s.removeProject);
   const updateConfig = useSkim((s) => s.updateConfig);
+  const update = useSkim((s) => s.update);
+  const checkUpdate = useSkim((s) => s.checkUpdate);
+  const [checking, setChecking] = useState(false);
+
+  const handleCheckUpdate = async () => {
+    setChecking(true);
+    await checkUpdate();
+    setChecking(false);
+  };
 
   // interval 输入：本地缓冲，blur / Enter 时夹取 10–600 再落盘
   const [intervalStr, setIntervalStr] = useState(String(config.refresh.intervalSec));
@@ -141,6 +150,19 @@ export default function SettingsView() {
                 alignRight
                 menuWidth="w-44"
               />
+            }
+          />
+        </Card>
+
+        {/* Updates */}
+        <Card title={t('settings.updates')}>
+          <SettingRow
+            title={t('settings.checkUpdates')}
+            desc={update ? t('settings.updateAvailable', { version: update.version }) : t('settings.checkUpdatesDesc')}
+            control={
+              <Button compact onClick={() => void handleCheckUpdate()} disabled={checking}>
+                {checking ? t('settings.checking') : t('settings.checkNow')}
+              </Button>
             }
           />
         </Card>

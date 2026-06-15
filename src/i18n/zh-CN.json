@@ -133,6 +133,14 @@
     "deleteTitle": "确定永久删除“{{name}}”？",
     "deleteBody": "将归档副本移入废纸篓，之后仍可从废纸篓恢复。"
   },
+  "update": {
+    "available": "Skim {{version}} 已发布",
+    "install": "安装并重启",
+    "installing": "安装中…",
+    "dismiss": "关闭更新提示",
+    "showNotes": "更新说明",
+    "hideNotes": "收起说明"
+  },
   "settings": {
     "title": "设置",
     "projects": "项目",
@@ -151,7 +159,13 @@
     "advancedMode": "高级模式",
     "advancedModeDesc": "开放 Claude 的四档可见性与 Codex 自动触发控制",
     "language": "语言",
-    "languageDesc": "Skim 界面语言。"
+    "languageDesc": "Skim 界面语言。",
+    "updates": "更新",
+    "checkUpdates": "检查更新",
+    "checkUpdatesDesc": "启动时也会自动检查。",
+    "checkNow": "立即检查",
+    "checking": "检查中…",
+    "updateAvailable": "{{version}} 已可用 — 见上方提示条。"
   },
   "lang": {
     "auto": "跟随系统",

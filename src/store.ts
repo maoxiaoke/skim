@@ -20,6 +20,7 @@ import type { ArchiveItem, RefreshResult } from './io/refresh';
 import { refreshAll } from './io/refresh';
 import { executePlans, type PlanResult } from './io/execute';
 import { ipc } from './io/tauri';
+import { checkForUpdate, downloadAndInstall, type UpdateInfo } from './io/updater';
 
 export type View = 'skills' | 'archive' | 'settings';
 export type StatusFilter = 'all' | 'on' | 'off' | 'issues';
@@ -90,6 +91,13 @@ interface SkimState {
   addProject: (path: string) => Promise<void>;
   removeProject: (path: string) => Promise<void>;
   updateConfig: (patch: Partial<SkimConfig>) => Promise<void>;
+
+  update: UpdateInfo | null;
+  updateDismissed: boolean;
+  updateInstalling: boolean;
+  checkUpdate: () => Promise<void>;
+  dismissUpdate: () => void;
+  installUpdate: () => Promise<void>;
 }
 
 function ctx(home: string) {
@@ -159,6 +167,10 @@ export const useSkim = create<SkimState>((set, get) => ({
   lastResults: null,
   busy: null,
   sidebarCollapsed: false,
+
+  update: null,
+  updateDismissed: false,
+  updateInstalling: false,
 
   refresh: async () => {
     set({ loading: true, error: null });
@@ -307,6 +319,22 @@ export const useSkim = create<SkimState>((set, get) => ({
     set({ config: next });
     await ipc.writeSkimConfig(JSON.stringify(next, null, 2));
     await get().refresh();
+  },
+
+  checkUpdate: async () => {
+    const info = await checkForUpdate();
+    if (info) set({ update: info, updateDismissed: false });
+  },
+
+  dismissUpdate: () => set({ updateDismissed: true }),
+
+  installUpdate: async () => {
+    set({ updateInstalling: true });
+    try {
+      await downloadAndInstall(() => {});
+    } finally {
+      set({ updateInstalling: false });
+    }
   },
 }));
 
