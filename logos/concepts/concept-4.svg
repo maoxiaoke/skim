@@ -1,0 +1,30 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Skim app icon">
+  <defs>
+    <linearGradient id="tileFill" x1="256" y1="0" x2="256" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F1F4F8"/>
+    </linearGradient>
+    <linearGradient id="markFill" x1="140" y1="320" x2="392" y2="196" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1FC9B7"/>
+      <stop offset="1" stop-color="#2E7DFF"/>
+    </linearGradient>
+  </defs>
+
+  <g id="tile">
+    <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#tileFill)"/>
+    <rect x="0.5" y="0.5" width="511" height="511" rx="111.5" fill="none" stroke="#E2E6EC" stroke-width="1"/>
+  </g>
+
+  <g id="mark">
+    <!-- single tapered gliding stroke: thick at start/middle, lifting and thinning toward the tail -->
+    <path fill="url(#markFill)"
+          d="M120 312
+             C 170 350 248 354 320 318
+             C 356 300 384 270 398 234
+             C 392 246 380 258 366 268
+             C 326 296 268 304 214 296
+             C 176 290 146 276 124 254
+             C 110 240 102 222 100 204
+             C 102 234 110 268 120 312 Z"/>
+  </g>
+</svg>

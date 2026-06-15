@@ -39,10 +39,9 @@ export default function SkillRow({ rec }: { rec: SkillRecord }) {
         <p className="flex items-center gap-1.5 text-[13px] font-medium leading-[1.4] text-ink">
           <span className="truncate">{rec.name}</span>
           {rec.isSymlink && (
-            <span title={t('row.linkTitle', { path: shortenPath(rec.realPath, home) })}>
+            <span title={shortenPath(rec.realPath, home)}>
               <Badge variant="outline">
                 <IconLink className="h-3 w-3" />
-                <span className="font-mono font-normal">{shortenPath(parentDir(rec.realPath), home)}</span>
               </Badge>
             </span>
           )}
@@ -90,7 +89,3 @@ export default function SkillRow({ rec }: { rec: SkillRecord }) {
   );
 }
 
-function parentDir(p: string): string {
-  const i = p.replace(/\/+$/, '').lastIndexOf('/');
-  return i > 0 ? p.slice(0, i) : p;
-}

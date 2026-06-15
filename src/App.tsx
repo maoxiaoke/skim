@@ -8,7 +8,7 @@ import DetailDrawer from './components/DetailDrawer';
 import SettingsView from './components/SettingsView';
 import Sidebar from './components/Sidebar';
 import SkillsView from './components/SkillsView';
-import { IconButton, IconPanelLeft, IconX, shortenPath, Spinner } from './components/ui';
+import { IconButton, IconX, shortenPath, Spinner } from './components/ui';
 import { useSkim } from './store';
 
 export default function App() {
@@ -21,9 +21,6 @@ export default function App() {
   const home = useSkim((s) => s.home);
   const locale = useSkim((s) => s.config.locale);
   const intervalSec = useSkim((s) => s.config.refresh.intervalSec);
-  const sidebarCollapsed = useSkim((s) => s.sidebarCollapsed);
-  const toggleSidebar = useSkim((s) => s.toggleSidebar);
-
   // 启动刷新
   useEffect(() => {
     void useSkim.getState().refresh();
@@ -55,19 +52,6 @@ export default function App() {
       <Sidebar />
 
       <div className="relative flex min-w-0 flex-1 flex-col">
-        {/* overlay 标题栏：主区顶部 28px 空白带可拖拽窗口 */}
-        <div data-tauri-drag-region className="absolute inset-x-0 top-0 z-20 h-7" />
-        {sidebarCollapsed && (
-          <button
-            type="button"
-            aria-label={t('nav.toggleSidebar')}
-            title={t('nav.toggleSidebar')}
-            onClick={toggleSidebar}
-            className="pressable absolute left-[84px] top-[10px] z-30 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-ink-3 hover:bg-hover hover:text-ink-2"
-          >
-            <IconPanelLeft className="h-4 w-4" />
-          </button>
-        )}
         {corruptConfigs.length > 0 && (
           <div role="alert" className="border-b border-divider bg-warning-soft px-6 py-2 text-[13px] leading-[1.55] text-warning">
             {t('banner.corrupt', {

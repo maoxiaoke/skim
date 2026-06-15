@@ -1,0 +1,24 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Skim app icon">
+  <defs>
+    <linearGradient id="tileGrad" x1="256" y1="0" x2="256" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F1F4F8"/>
+    </linearGradient>
+    <linearGradient id="upperGrad" x1="160" y1="210" x2="372" y2="172" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1FC9B7"/>
+      <stop offset="1" stop-color="#2E7DFF"/>
+    </linearGradient>
+  </defs>
+
+  <g id="tile">
+    <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#tileGrad)"/>
+    <rect x="0.5" y="0.5" width="511" height="511" rx="111.5" fill="none" stroke="#E2E6EC" stroke-width="1"/>
+  </g>
+
+  <g id="mark" fill="none" stroke-width="34" stroke-linecap="round">
+    <!-- lower, calmer stroke: gentle shallow curve, muted teal -->
+    <path d="M148 322 Q254 298 360 322" stroke="#7FD9CE"/>
+    <!-- upper, lifted, more curved and offset right: the hero skimming off -->
+    <path d="M172 206 Q288 156 394 198" stroke="url(#upperGrad)"/>
+  </g>
+</svg>

@@ -1,0 +1,26 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Skim crescent icon">
+  <defs>
+    <linearGradient id="tileGrad" x1="256" y1="0" x2="256" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F1F4F8"/>
+    </linearGradient>
+    <linearGradient id="markGrad" x1="150" y1="372" x2="378" y2="148" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4DA2FF"/>
+      <stop offset="1" stop-color="#007AFF"/>
+    </linearGradient>
+    <mask id="crescentMask">
+      <rect width="512" height="512" fill="black"/>
+      <circle cx="256" cy="256" r="140" fill="white"/>
+      <circle cx="322" cy="190" r="124" fill="black"/>
+    </mask>
+  </defs>
+
+  <g id="tile">
+    <rect x="0.5" y="0.5" width="511" height="511" rx="112" fill="url(#tileGrad)"/>
+    <rect x="1" y="1" width="510" height="510" rx="111.5" fill="none" stroke="#E2E6EC" stroke-width="1"/>
+  </g>
+
+  <g id="mark">
+    <rect width="512" height="512" fill="url(#markGrad)" mask="url(#crescentMask)"/>
+  </g>
+</svg>

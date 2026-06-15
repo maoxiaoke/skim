@@ -87,15 +87,17 @@ export default function Sidebar() {
       <div className="flex h-full w-[210px] flex-col">
       {/* overlay 标题栏：红绿灯悬浮在此区域内，整块可拖拽窗口 */}
       <div data-tauri-drag-region className="h-[44px] shrink-0" />
-      <button
-        type="button"
-        aria-label={t('nav.toggleSidebar')}
-        title={t('nav.toggleSidebar')}
-        onClick={toggleSidebar}
-        className="pressable absolute right-2 top-[10px] flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-ink-3 hover:bg-selected hover:text-ink-2"
-      >
-        <IconPanelLeft className="h-4 w-4" />
-      </button>
+      {!collapsed && (
+        <button
+          type="button"
+          aria-label={t('nav.toggleSidebar')}
+          title={t('nav.toggleSidebar')}
+          onClick={toggleSidebar}
+          className="pressable absolute right-2 top-[10px] flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-ink-3 hover:bg-selected hover:text-ink-2"
+        >
+          <IconPanelLeft className="h-4 w-4" />
+        </button>
+      )}
       <div data-tauri-drag-region className="px-3 pb-1.5">
         <h1 className="pointer-events-none text-[13px] font-semibold leading-[1.3] text-ink">{t('app.name')}</h1>
       </div>
