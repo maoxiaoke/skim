@@ -54,10 +54,13 @@ jobs:
           security default-keychain -s build.keychain
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security import /tmp/certificate.p12 -k build.keychain \
-            -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: \
+            -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign -A
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
             -s -k "$KEYCHAIN_PASSWORD" build.keychain
-          security list-keychain -d user -s build.keychain
+          # Keep login.keychain in the search path alongside build.keychain
+          security list-keychain -d user -s build.keychain login.keychain
+          # Verify the identity was imported
+          security find-identity -v -p codesigning build.keychain
 
       - name: Build
         env:
