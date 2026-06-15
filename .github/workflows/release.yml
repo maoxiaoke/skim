@@ -70,9 +70,13 @@ jobs:
           security list-keychain -d user -s "$KEYCHAIN_PATH"
           security default-keychain -s "$KEYCHAIN_PATH"
 
-          # Verify
+          # Extract hash of imported cert and use it as signing identity (avoids string matching)
           security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+          CERT_HASH=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" \
+            | grep "Developer ID Application" | head -1 | awk '{print $2}')
+          echo "Cert hash: $CERT_HASH"
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+          echo "APPLE_SIGNING_IDENTITY=$CERT_HASH" >> $GITHUB_ENV
 
       - name: Write notarization API key
         env:
