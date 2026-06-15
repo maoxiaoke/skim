@@ -35,7 +35,12 @@
       "icons/icon.icns"
     ],
     "macOS": {
-      "signingIdentity": "Developer ID Application: Zuyu Jiao (8R73P9V5H8)"
+      "signingIdentity": "Developer ID Application: Zuyu Jiao (8R73P9V5H8)",
+      "notarizationCredentials": {
+        "appleApiKey": "$APPLE_API_KEY",
+        "appleApiIssuer": "$APPLE_API_ISSUER",
+        "appleApiKeyPath": "$APPLE_API_KEY_PATH"
+      }
     }
   },
   "plugins": {
