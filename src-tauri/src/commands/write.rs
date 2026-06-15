@@ -187,6 +187,46 @@ pub fn apply_codex_toml_patch(
     Ok(sha256_hex(&next))
 }
 
+// ---------- Codex plugin toggle ----------
+
+pub fn apply_codex_plugin_enabled(raw: &str, plugin_key: &str, enabled: bool) -> Result<String> {
+    let mut doc: toml_edit::DocumentMut = raw
+        .parse()
+        .map_err(|e| SkimError::ConfigCorrupt(format!("{e}")))?;
+
+    if doc.get("plugins").is_none() {
+        doc["plugins"] = toml_edit::table();
+    }
+    let plugins = doc["plugins"]
+        .as_table_mut()
+        .ok_or_else(|| SkimError::ConfigCorrupt("`plugins` is not a table".into()))?;
+
+    if plugins.get(plugin_key).is_none() {
+        plugins[plugin_key] = toml_edit::table();
+    }
+    if let Some(plugin) = plugins.get_mut(plugin_key).and_then(|v| v.as_table_mut()) {
+        plugin["enabled"] = toml_edit::value(enabled);
+    }
+    Ok(doc.to_string())
+}
+
+#[tauri::command]
+pub fn apply_codex_plugin_patch(
+    config_path: String,
+    plugin_key: String,
+    enabled: bool,
+    expected_hash: Option<String>,
+) -> Result<String> {
+    let path = Path::new(&config_path);
+    assert_allowed(path)?;
+    let raw = if path.exists() { fs::read_to_string(path)? } else { String::new() };
+    check_hash(&raw, expected_hash.as_deref())?;
+    let next = apply_codex_plugin_enabled(&raw, &plugin_key, enabled)?;
+    backup_file(path)?;
+    atomic_write(path, &next)?;
+    Ok(sha256_hex(&next))
+}
+
 // ---------- Claude settings.json ----------
 
 #[tauri::command]

@@ -3,6 +3,7 @@ use crate::safety::assert_allowed;
 use serde::Serialize;
 use std::fs;
 use std::path::Path;
+use serde_json;
 
 /// SKILL.md 头部读取上限：frontmatter + 描述足够（tech-design.md 数据模型）
 const SKILL_MD_HEAD: usize = 8 * 1024;
@@ -179,12 +180,42 @@ pub struct CodexEntryOut {
 }
 
 #[derive(Serialize)]
+pub struct CodexPluginEntryOut {
+    pub plugin_key: String,
+    pub enabled: Option<bool>,
+    pub version: Option<String>,
+    pub install_path: Option<String>,
+}
+
+#[derive(Serialize)]
 pub struct CodexConfigOut {
     pub path: String,
     pub raw: String,
     pub hash: String,
     /// None = 解析失败（前端降级只读）
     pub entries: Option<Vec<CodexEntryOut>>,
+    pub plugins: Vec<CodexPluginEntryOut>,
+}
+
+fn parse_codex_plugins(raw: &str) -> Vec<CodexPluginEntryOut> {
+    let doc: toml_edit::DocumentMut = match raw.parse() {
+        Ok(d) => d,
+        Err(_) => return Vec::new(),
+    };
+    let mut out = Vec::new();
+    if let Some(plugins) = doc.get("plugins").and_then(|p| p.as_table()) {
+        for (key, value) in plugins.iter() {
+            if let Some(t) = value.as_table() {
+                out.push(CodexPluginEntryOut {
+                    plugin_key: key.to_string(),
+                    enabled: t.get("enabled").and_then(|v| v.as_bool()),
+                    version: t.get("version").and_then(|v| v.as_str()).map(|s| s.to_string()),
+                    install_path: t.get("install_path").and_then(|v| v.as_str()).map(|s| s.to_string()),
+                });
+            }
+        }
+    }
+    out
 }
 
 pub fn parse_codex_entries(raw: &str) -> Option<Vec<CodexEntryOut>> {
@@ -215,8 +246,68 @@ pub fn read_codex_config(path: String) -> Result<CodexConfigOut> {
     assert_allowed(p)?;
     let raw = if p.exists() { fs::read_to_string(p)? } else { String::new() };
     let entries = parse_codex_entries(&raw);
+    let plugins = parse_codex_plugins(&raw);
     let hash = crate::commands::write::sha256_hex(&raw);
-    Ok(CodexConfigOut { path, raw, hash, entries })
+    Ok(CodexConfigOut { path, raw, hash, entries, plugins })
+}
+
+// ---------- Claude installed plugins ----------
+
+#[derive(Serialize)]
+pub struct InstalledPluginOut {
+    pub key: String,
+    pub version: String,
+    pub install_path: String,
+    pub scope: String,
+    pub project_path: Option<String>,
+}
+
+fn parse_installed_plugins(raw: &str) -> Vec<InstalledPluginOut> {
+    // Real format: { "version": 2, "plugins": { "key@marketplace": [ { "scope": "user", "installPath": "...", "version": "...", "projectPath"?: "..." } ] } }
+    let root: serde_json::Value = match serde_json::from_str(raw) {
+        Ok(v) => v,
+        Err(_) => return Vec::new(),
+    };
+    let plugins_map = match root.get("plugins").and_then(|p| p.as_object()) {
+        Some(m) => m,
+        None => return Vec::new(),
+    };
+    let mut out = Vec::new();
+    for (plugin_key, installs_val) in plugins_map {
+        let installs = match installs_val.as_array() {
+            Some(a) => a,
+            None => continue,
+        };
+        for install in installs {
+            let install_path = match install.get("installPath").and_then(|v| v.as_str()) {
+                Some(p) => p.to_string(),
+                None => continue,
+            };
+            let version = install.get("version").and_then(|v| v.as_str()).unwrap_or("").to_string();
+            let scope = install.get("scope").and_then(|v| v.as_str()).unwrap_or("user").to_string();
+            let project_path = install.get("projectPath").and_then(|v| v.as_str()).map(|s| s.to_string());
+            out.push(InstalledPluginOut {
+                key: plugin_key.clone(),
+                version,
+                install_path,
+                scope,
+                project_path,
+            });
+        }
+    }
+    out
+}
+
+#[tauri::command]
+pub fn read_claude_installed_plugins(home: String) -> Vec<InstalledPluginOut> {
+    let path = Path::new(&home).join(".claude/plugins/installed_plugins.json");
+    if !path.exists() {
+        return Vec::new();
+    }
+    match fs::read_to_string(&path) {
+        Ok(raw) => parse_installed_plugins(&raw),
+        Err(_) => Vec::new(),
+    }
 }
 
 // ---------- 项目发现 ----------

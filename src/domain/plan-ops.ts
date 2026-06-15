@@ -1,4 +1,5 @@
 import type {
+  AgentKind,
   ArchiveManifest,
   OpPlan,
   SkillRecord,
@@ -126,7 +127,7 @@ export function planArchive(rec: SkillRecord, ctx: PlanCtx, linkedInstalls: Skil
     version: 1,
     skillName: rec.name,
     agent: rec.agent,
-    scope: rec.scope.kind,
+    scope: rec.scope.kind as 'user' | 'project' | 'bundled',
     sourcePath: rec.dirPath,
     archivedAt: ctx.nowIso,
     statusBeforeArchive: rec.status,
@@ -151,6 +152,25 @@ export function planDelete(rec: SkillRecord, ctx: PlanCtx, linkedInstalls: Skill
       ...configCleanupStep(rec, ctx),
       ...linkedCleanupSteps(linkedInstalls, ctx),
     ],
+  };
+}
+
+export function planTogglePlugin(
+  agent: AgentKind,
+  pluginKey: string,
+  enabled: boolean,
+  ctx: PlanCtx,
+): OpPlan {
+  const summary = { action: 'plugin-toggle', skillName: pluginKey, detail: enabled ? 'enabled' : 'disabled' };
+  if (agent === 'claude') {
+    return {
+      summary,
+      steps: [{ kind: 'claude-plugin-toggle', settingsPath: `${ctx.home}/.claude/settings.json`, pluginKey, enabled }],
+    };
+  }
+  return {
+    summary,
+    steps: [{ kind: 'codex-plugin-toggle', configPath: `${ctx.home}/.codex/config.toml`, pluginKey, enabled }],
   };
 }
 

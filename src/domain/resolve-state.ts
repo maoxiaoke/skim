@@ -161,6 +161,7 @@ function makeRecord(
       strayFile: rest.strayFile,
       parseError: rest.parseError,
       locked: root.scope.kind === 'bundled',
+      statusLocked: false,
     },
   };
 }

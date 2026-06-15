@@ -1,6 +1,7 @@
 // 全量刷新编排：项目发现 → 扫描 → 配置读取 → 领域层求解
 import { homeDir } from '@tauri-apps/api/path';
 import type {
+  AgentKind,
   ArchiveManifest,
   ClaudeSettingsLayer,
   ProjectCandidate,
@@ -11,7 +12,10 @@ import type {
 } from '../domain/types';
 import { DEFAULT_SKIM_CONFIG } from '../domain/types';
 import { parseCodexSessionIndex, discoverProjects } from '../domain/discover-projects';
+import { parseSkillDir } from '../domain/parse-skill';
+import { pathHash } from '../domain/plan-ops';
 import { resolveStates } from '../domain/resolve-state';
+import type { CodexPluginEntryOut, InstalledPluginOut } from './tauri';
 import { ipc } from './tauri';
 
 export interface ArchiveItem {
@@ -88,6 +92,115 @@ function buildRoots(home: string, projects: ProjectCandidate[]): ScanRoot[] {
   return roots;
 }
 
+interface PluginScanMeta {
+  agent: AgentKind;
+  pluginKey: string;
+  version: string;
+  pluginEnabled: boolean;
+  installScope: 'user' | 'project';
+  projectPath?: string;
+}
+
+function parseEnabledPlugins(content: string | null): Record<string, boolean> {
+  if (!content || content.trim() === '') return {};
+  try {
+    const parsed = JSON.parse(content) as Record<string, unknown>;
+    const ep = parsed['enabledPlugins'];
+    if (!ep || typeof ep !== 'object' || Array.isArray(ep)) return {};
+    const result: Record<string, boolean> = {};
+    for (const [k, v] of Object.entries(ep as Record<string, unknown>)) {
+      if (typeof v === 'boolean') result[k] = v;
+    }
+    return result;
+  } catch {
+    return {};
+  }
+}
+
+function buildPluginScanRoots(
+  claudePlugins: InstalledPluginOut[],
+  enabledPlugins: Record<string, boolean>,
+  codexPlugins: CodexPluginEntryOut[],
+): { meta: PluginScanMeta; root: string }[] {
+  const result: { meta: PluginScanMeta; root: string }[] = [];
+  for (const p of claudePlugins) {
+    result.push({
+      meta: {
+        agent: 'claude',
+        pluginKey: p.key,
+        version: p.version || '?',
+        pluginEnabled: enabledPlugins[p.key] !== false,
+        installScope: p.scope === 'project' ? 'project' : 'user',
+        projectPath: p.project_path ?? undefined,
+      },
+      root: `${p.install_path}/skills`,
+    });
+  }
+  for (const p of codexPlugins) {
+    if (!p.install_path) continue;
+    result.push({
+      meta: {
+        agent: 'codex',
+        pluginKey: p.plugin_key,
+        version: p.version ?? '?',
+        pluginEnabled: p.enabled !== false,
+        installScope: 'user',
+      },
+      root: `${p.install_path}/skills`,
+    });
+  }
+  return result;
+}
+
+function buildPluginRecords(
+  pluginRoots: { meta: PluginScanMeta; root: string }[],
+  snaps: RootSnapshot[],
+): SkillRecord[] {
+  const records: SkillRecord[] = [];
+  for (let i = 0; i < pluginRoots.length; i++) {
+    const { meta } = pluginRoots[i];
+    const snap = snaps[i];
+    if (!snap?.exists) continue;
+    const scope = {
+      kind: 'plugin' as const,
+      root: snap.root,
+      pluginKey: meta.pluginKey,
+      version: meta.version,
+      pluginEnabled: meta.pluginEnabled,
+      installScope: meta.installScope,
+      ...(meta.projectPath ? { projectPath: meta.projectPath } : {}),
+    };
+    for (const d of snap.skills) {
+      const parsed = parseSkillDir(d.dir_name, d.skill_md_head);
+      records.push({
+        id: `plugin:${meta.pluginKey}:${d.dir_path}`,
+        agent: meta.agent,
+        scope,
+        dirPath: d.dir_path,
+        realPath: d.real_path,
+        isSymlink: d.is_symlink,
+        contentKey: d.skill_md_head === null ? '' : pathHash(d.skill_md_head),
+        name: parsed.name,
+        description: parsed.description,
+        status: meta.pluginEnabled ? 'on' : 'off',
+        statusSource: null,
+        allowImplicitInvocation: true,
+        sizeBytes: d.size_bytes,
+        fileCount: d.file_count,
+        flags: {
+          duplicate: false,
+          conflict: false,
+          strayFile: false,
+          parseError: parsed.parseError,
+          locked: true,
+          statusLocked: true,
+        },
+      });
+    }
+  }
+  return records;
+}
+
 function parseOverrides(content: string | null): Record<string, string> | null {
   if (content === null || content.trim() === '') return {};
   try {
@@ -114,11 +227,12 @@ export async function refreshAll(): Promise<RefreshResult> {
     `${p.path}/.claude/settings.local.json`,
   ]);
 
-  const [snaps, settingsFiles, codexConfig, archiveRaw] = await Promise.all([
+  const [snaps, settingsFiles, codexConfig, archiveRaw, claudePlugins] = await Promise.all([
     ipc.scanSkillDirs(roots.map((r) => r.scope.root)),
     ipc.readTextFiles([userSettings, ...projectSettingsPaths]),
     ipc.readCodexConfig(`${home}/.codex/config.toml`),
     ipc.listArchive(`${home}/.skim/archive`),
+    ipc.readClaudeInstalledPlugins(home),
   ]);
 
   const overridesByPath = new Map<string, Record<string, string> | null>();
@@ -144,7 +258,7 @@ export async function refreshAll(): Promise<RefreshResult> {
   };
 
   const snapshots = roots.map((root, i) => ({ root, snap: snaps[i] as RootSnapshot }));
-  const { records, corruptConfigs } = resolveStates({
+  const { records: regularRecords, corruptConfigs } = resolveStates({
     snapshots,
     claudeLayersFor,
     codexConfig: {
@@ -157,6 +271,15 @@ export async function refreshAll(): Promise<RefreshResult> {
         })) ?? null,
     },
   });
+
+  const enabledPlugins = parseEnabledPlugins(settingsFiles[0].content);
+  const pluginScanRoots = buildPluginScanRoots(claudePlugins, enabledPlugins, codexConfig.plugins ?? []);
+  const pluginSnaps: RootSnapshot[] = pluginScanRoots.length
+    ? await ipc.scanSkillDirs(pluginScanRoots.map((r) => r.root))
+    : [];
+  const pluginRecords = buildPluginRecords(pluginScanRoots, pluginSnaps);
+
+  const records = [...regularRecords, ...pluginRecords];
 
   const archive: ArchiveItem[] = [];
   for (const a of archiveRaw) {

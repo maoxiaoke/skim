@@ -19,7 +19,12 @@
   "scope": {
     "user": "User",
     "project": "Project",
-    "bundled": "Bundled"
+    "bundled": "Bundled",
+    "plugin": "Plugin"
+  },
+  "plugin": {
+    "toggleLabel": "Toggle plugin {{key}}",
+    "toggleHint": "Affects entire plugin"
   },
   "banner": {
     "corrupt": "Could not parse {{files}}. The affected agent is read-only until the file is fixed.",

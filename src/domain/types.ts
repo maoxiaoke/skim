@@ -5,7 +5,8 @@ export type AgentKind = 'claude' | 'codex';
 export type Scope =
   | { kind: 'user'; root: string }
   | { kind: 'project'; root: string; project: string }
-  | { kind: 'bundled'; root: string };
+  | { kind: 'bundled'; root: string }
+  | { kind: 'plugin'; root: string; pluginKey: string; version: string; pluginEnabled: boolean; installScope: 'user' | 'project'; projectPath?: string };
 
 /** Claude 四档；Codex 仅 on/off（enabled），allowImplicitInvocation 正交 */
 export type SkillStatus = 'on' | 'name-only' | 'user-invocable-only' | 'off';
@@ -17,7 +18,10 @@ export interface SkillFlags {
   conflict: boolean;
   strayFile: boolean;
   parseError: boolean;
+  /** 禁止 archive / delete（bundled + plugin 技能） */
   locked: boolean;
+  /** 禁止行级 enable/disable（plugin 技能专用；bundled 技能可改状态） */
+  statusLocked: boolean;
 }
 
 export interface SkillRecord {
@@ -134,7 +138,21 @@ export interface RestoreOp {
   mode: 'fail' | 'overwrite' | 'rename';
 }
 
-export type OpStep = ClaudePatchOp | CodexPatchOp | MoveDirOp | TrashOp | RestoreOp;
+export interface ClaudePluginToggleOp {
+  kind: 'claude-plugin-toggle';
+  settingsPath: string;
+  pluginKey: string;
+  enabled: boolean;
+}
+
+export interface CodexPluginToggleOp {
+  kind: 'codex-plugin-toggle';
+  configPath: string;
+  pluginKey: string;
+  enabled: boolean;
+}
+
+export type OpStep = ClaudePatchOp | CodexPatchOp | MoveDirOp | TrashOp | RestoreOp | ClaudePluginToggleOp | CodexPluginToggleOp;
 
 export interface OpPlan {
   /** 给确认弹层的摘要行 */

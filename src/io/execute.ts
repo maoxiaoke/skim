@@ -1,6 +1,6 @@
 // OpPlan 执行器：领域层产出的计划 → IPC 调用。每步执行前现读现校验（乐观锁）。
 import type { OpPlan, OpStep } from '../domain/types';
-import { applyClaudeOverrides } from '../domain/diff-config';
+import { applyClaudeOverrides, applyClaudePluginEnabled } from '../domain/diff-config';
 import { ipc, ipcErrorMessage, sha256Hex } from './tauri';
 
 export interface StepResult {
@@ -41,6 +41,19 @@ async function executeStep(step: OpStep): Promise<void> {
         ],
         cfg.hash,
       );
+      return;
+    }
+    case 'claude-plugin-toggle': {
+      const [file] = await ipc.readTextFiles([step.settingsPath]);
+      const raw = file.content ?? '';
+      const next = applyClaudePluginEnabled(raw, step.pluginKey, step.enabled);
+      const expected = file.content === null ? null : await sha256Hex(raw);
+      await ipc.writeClaudeSettings(step.settingsPath, next, expected);
+      return;
+    }
+    case 'codex-plugin-toggle': {
+      const cfg = await ipc.readCodexConfig(step.configPath);
+      await ipc.applyCodexPluginPatch(step.configPath, step.pluginKey, step.enabled, cfg.hash);
       return;
     }
     case 'archive-move':

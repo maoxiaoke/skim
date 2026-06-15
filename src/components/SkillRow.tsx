@@ -71,9 +71,11 @@ export default function SkillRow({ rec }: { rec: SkillRecord }) {
 
       <span className="shrink-0 text-[11px] tabular-nums text-ink-3">{fmtSize(rec.sizeBytes)}</span>
 
-      <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
-        <StatusControl rec={rec} />
-      </div>
+      {!rec.flags.statusLocked && (
+        <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+          <StatusControl rec={rec} />
+        </div>
+      )}
 
       {rec.flags.locked && (
         <span

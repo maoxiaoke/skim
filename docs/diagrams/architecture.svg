@@ -21,7 +21,7 @@
   <!-- header -->
   <text x="48" y="44" class="mono" font-size="8" fill="#9A9AA0" letter-spacing="0.16em">SKIM · TECH DESIGN · 01</text>
   <text x="48" y="80" class="serif" font-size="28" fill="#1A1A1A">系统架构分层</text>
-  <text x="48" y="104" font-size="12" fill="#6E6E73">React UI · 纯函数领域核心 · Rust 薄层 — 所有破坏性能力收敛在 Rust 侧</text>
+  <text x="48" y="104" font-size="12" fill="#6E6E73">React UI · 纯函数领域核心 · Rust 薄层 — 所有破坏性能力收敛在 Rust 侧 · M4 新增插件技能层</text>
 
   <!-- ===== arrows first (behind boxes) ===== -->
   <!-- vertical stack inside webview -->
@@ -92,7 +92,8 @@
   <rect x="120" y="556" width="224" height="64" rx="6" fill="#FFFFFF"/>
   <rect x="120" y="556" width="224" height="64" rx="6" fill="rgba(26,26,26,0.05)" stroke="#6E6E73" stroke-width="1"/>
   <text x="232" y="582" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">Agent 配置</text>
-  <text x="232" y="600" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">settings.json · config.toml</text>
+  <text x="232" y="596" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">settings.json · config.toml</text>
+  <text x="232" y="608" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">enabledPlugins · [plugins.*]</text>
 
   <rect x="368" y="556" width="224" height="64" rx="6" fill="#FFFFFF"/>
   <rect x="368" y="556" width="224" height="64" rx="6" fill="rgba(26,26,26,0.05)" stroke="#6E6E73" stroke-width="1"/>
@@ -102,7 +103,8 @@
   <rect x="616" y="556" width="224" height="64" rx="6" fill="#FFFFFF"/>
   <rect x="616" y="556" width="224" height="64" rx="6" fill="rgba(26,26,26,0.05)" stroke="#6E6E73" stroke-width="1"/>
   <text x="728" y="582" font-size="12" font-weight="600" fill="#1A1A1A" text-anchor="middle">Skills 目录</text>
-  <text x="728" y="600" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">~/.claude · ~/.codex · ~/.agents · 项目</text>
+  <text x="728" y="596" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">~/.claude · ~/.codex · ~/.agents · 项目</text>
+  <text x="728" y="608" class="mono" font-size="9" fill="#6E6E73" text-anchor="middle">plugins/cache/**/skills · installed_plugins.json</text>
 
   <!-- ===== legend ===== -->
   <line x1="48" y1="668" x2="912" y2="668" stroke="rgba(26,26,26,0.10)" stroke-width="0.8"/>

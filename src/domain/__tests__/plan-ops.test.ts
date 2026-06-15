@@ -26,7 +26,7 @@ function rec(over: Partial<SkillRecord> = {}): SkillRecord {
     allowImplicitInvocation: true,
     sizeBytes: 1234,
     fileCount: 8,
-    flags: { duplicate: false, strayFile: false, parseError: false, locked: false },
+    flags: { duplicate: false, conflict: false, strayFile: false, parseError: false, locked: false, statusLocked: false },
     ...over,
   };
 }
@@ -69,7 +69,7 @@ describe('planSetStatus — claude', () => {
 
   it('rejects stray files', () => {
     expect(() =>
-      planSetStatus(rec({ flags: { duplicate: false, strayFile: true, parseError: false, locked: false } }), 'off', ctx),
+      planSetStatus(rec({ flags: { duplicate: false, conflict: false, strayFile: true, parseError: false, locked: false, statusLocked: false } }), 'off', ctx),
     ).toThrow();
   });
 });
@@ -142,7 +142,7 @@ describe('planArchive / planDelete', () => {
   });
 
   it('bundled skills cannot be archived or deleted', () => {
-    const locked = rec({ flags: { duplicate: false, strayFile: false, parseError: false, locked: true } });
+    const locked = rec({ flags: { duplicate: false, conflict: false, strayFile: false, parseError: false, locked: true, statusLocked: false } });
     expect(() => planArchive(locked, ctx)).toThrow();
     expect(() => planDelete(locked, ctx)).toThrow();
   });
@@ -170,7 +170,7 @@ describe('planArchive / planDelete', () => {
   });
 
   it('stray files cannot be archived but can be deleted', () => {
-    const stray = rec({ flags: { duplicate: false, strayFile: true, parseError: false, locked: false } });
+    const stray = rec({ flags: { duplicate: false, conflict: false, strayFile: true, parseError: false, locked: false, statusLocked: false } });
     expect(() => planArchive(stray, ctx)).toThrow();
     expect(planDelete(stray, ctx).steps).toEqual([{ kind: 'trash', path: stray.dirPath }]);
   });

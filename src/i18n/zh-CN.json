@@ -19,7 +19,12 @@
   "scope": {
     "user": "用户",
     "project": "项目",
-    "bundled": "内置"
+    "bundled": "内置",
+    "plugin": "插件"
+  },
+  "plugin": {
+    "toggleLabel": "切换插件 {{key}} 的启用状态",
+    "toggleHint": "影响整个插件"
   },
   "banner": {
     "corrupt": "无法解析 {{files}}，受影响的代理已降级为只读，修复该文件后恢复。",

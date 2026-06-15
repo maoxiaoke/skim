@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type {
+  AgentKind,
   OpPlan,
   ProjectCandidate,
   SkimConfig,
@@ -13,6 +14,7 @@ import {
   planRestore,
   planSetAllowImplicit,
   planSetStatus,
+  planTogglePlugin,
 } from './domain/plan-ops';
 import type { ArchiveItem, RefreshResult } from './io/refresh';
 import { refreshAll } from './io/refresh';
@@ -82,6 +84,8 @@ interface SkimState {
   deleteArchived: (item: ArchiveItem) => Promise<void>;
   confirmAccept: () => Promise<void>;
   confirmCancel: () => void;
+
+  togglePlugin: (agent: AgentKind, pluginKey: string, enabled: boolean) => Promise<void>;
 
   addProject: (path: string) => Promise<void>;
   removeProject: (path: string) => Promise<void>;
@@ -271,6 +275,13 @@ export const useSkim = create<SkimState>((set, get) => ({
 
   confirmCancel: () => set({ confirm: null }),
 
+  togglePlugin: async (agent, pluginKey, enabled) => {
+    const plan = planTogglePlugin(agent, pluginKey, enabled, ctx(get().home));
+    const results = await executePlans([plan]);
+    set({ lastResults: results });
+    await get().refresh();
+  },
+
   addProject: async (path) => {
     const cfg = get().config;
     const p = path.replace(/\/+$/, '');
@@ -309,6 +320,8 @@ export function fmtSize(bytes: number): string {
 export function visibleRecords(s: Pick<SkimState, 'records' | 'search' | 'statusFilter' | 'agentFilter'>): SkillRecord[] {
   const q = s.search.trim().toLowerCase();
   return s.records.filter((r) => {
+    // Plugin scope 由 SkillsView 的 pluginGroups 单独渲染，不进常规列表
+    if (r.scope.kind === 'plugin') return false;
     if (s.agentFilter === 'claude' || s.agentFilter === 'codex') {
       // Agents 视图 = 该 agent 的用户级（含 bundled 与 Store，Codex 确实加载两者）；项目级归 Projects
       if (r.agent !== s.agentFilter || r.scope.kind === 'project') return false;

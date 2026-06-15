@@ -8,6 +8,13 @@ export interface FileReadResult {
   error: string | null;
 }
 
+export interface CodexPluginEntryOut {
+  plugin_key: string;
+  enabled: boolean | null;
+  version: string | null;
+  install_path: string | null;
+}
+
 export interface CodexConfigOut {
   path: string;
   raw: string;
@@ -15,6 +22,15 @@ export interface CodexConfigOut {
   entries:
     | { raw_path: string; enabled: boolean | null; allow_implicit_invocation: boolean | null }[]
     | null;
+  plugins: CodexPluginEntryOut[];
+}
+
+export interface InstalledPluginOut {
+  key: string;
+  version: string;
+  install_path: string;
+  scope: string;
+  project_path: string | null;
 }
 
 export interface DecodedProject {
@@ -42,6 +58,16 @@ export const ipc = {
   decodeProjectDirs: (names: string[]) => invoke<DecodedProject[]>('decode_project_dirs', { names }),
   dirsExist: (paths: string[]) => invoke<boolean[]>('dirs_exist', { paths }),
   listArchive: (archiveRoot: string) => invoke<ArchiveEntryOut[]>('list_archive', { archiveRoot }),
+
+  readClaudeInstalledPlugins: (home: string) =>
+    invoke<InstalledPluginOut[]>('read_claude_installed_plugins', { home }),
+
+  applyCodexPluginPatch: (
+    configPath: string,
+    pluginKey: string,
+    enabled: boolean,
+    expectedHash: string | null,
+  ) => invoke<string>('apply_codex_plugin_patch', { configPath, pluginKey, enabled, expectedHash }),
 
   applyCodexTomlPatch: (
     configPath: string,
