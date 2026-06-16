@@ -1,6 +1,6 @@
 [package]
 name = "skim"
-version = "0.1.0"
+version = "0.2.17"
 description = "Cross-agent local AI skills manager"
 edition = "2021"
 
