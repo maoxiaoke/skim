@@ -14,9 +14,6 @@ jobs:
           - runner: macos-latest   # Apple Silicon
             target: aarch64-apple-darwin
             arch: aarch64
-          - runner: macos-13       # Intel
-            target: x86_64-apple-darwin
-            arch: x86_64
 
     runs-on: ${{ matrix.runner }}
 
@@ -120,12 +117,6 @@ jobs:
           name: skim-aarch64
           path: artifacts/aarch64
 
-      - name: Download x86_64 artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: skim-x86_64
-          path: artifacts/x86_64
-
       - name: Generate latest.json
         run: |
           VERSION=${GITHUB_REF_NAME#v}
@@ -136,10 +127,6 @@ jobs:
           ARM_SIG=$(cat artifacts/aarch64/*.app.tar.gz.sig)
           ARM_URL="https://github.com/$REPO/releases/download/$TAG/$(basename $ARM_TAR)"
 
-          X86_TAR=$(ls artifacts/x86_64/*.app.tar.gz | head -1)
-          X86_SIG=$(cat artifacts/x86_64/*.app.tar.gz.sig)
-          X86_URL="https://github.com/$REPO/releases/download/$TAG/$(basename $X86_TAR)"
-
           cat > latest.json <<EOF
           {
             "version": "$VERSION",
@@ -149,10 +136,6 @@ jobs:
               "darwin-aarch64": {
                 "url": "$ARM_URL",
                 "signature": "$ARM_SIG"
-              },
-              "darwin-x86_64": {
-                "url": "$X86_URL",
-                "signature": "$X86_SIG"
               }
             }
           }
@@ -170,7 +153,4 @@ jobs:
             artifacts/aarch64/*.dmg
             artifacts/aarch64/*.app.tar.gz
             artifacts/aarch64/*.app.tar.gz.sig
-            artifacts/x86_64/*.dmg
-            artifacts/x86_64/*.app.tar.gz
-            artifacts/x86_64/*.app.tar.gz.sig
             latest.json
