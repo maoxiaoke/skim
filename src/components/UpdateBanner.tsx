@@ -44,7 +44,7 @@ export default function UpdateBanner() {
               <button
                 onClick={() => void installUpdate()}
                 disabled={updateInstalling}
-                className="shrink-0 rounded-control border border-accent/30 bg-accent px-3 py-1 text-[12px] font-medium text-white hover:bg-accent/90 disabled:opacity-60"
+                className="shrink-0 rounded-full bg-accent px-3.5 py-1 text-[12px] font-medium text-white hover:bg-accent/90 disabled:opacity-60"
               >
                 {updateInstalling ? t('update.installing') : t('update.install')}
               </button>

@@ -37,10 +37,10 @@ export default function ConfirmDialog() {
     <AnimatePresence>
       {confirm && (
         <ModalShell key="confirm" onDismiss={confirmCancel}>
-      <h3 className="mb-2 text-[15px] font-semibold leading-[1.3] text-ink">{title}</h3>
-      <p className="mb-3 text-[13px] leading-[1.55] text-ink-2">{t(`confirm.${confirm.kind}Body`)}</p>
+      <h3 className="mb-2 text-[17px] font-semibold leading-[1.3] tracking-[-0.01em] text-ink">{title}</h3>
+      <p className="mb-4 text-[14px] leading-[1.6] text-ink-2">{t(`confirm.${confirm.kind}Body`)}</p>
       {confirm.warnings && (
-        <div className="mb-3 rounded-control bg-warning-soft px-3 py-2.5 text-[13px] leading-[1.55] text-warning">
+        <div className="mb-4 rounded-[10px] bg-warning-soft px-3.5 py-3 text-[13px] leading-[1.55] text-warning">
           {confirm.warnings.codexLoadedCount > 0 && (
             <p className="font-medium">
               {t('warn.codexLoaded', { count: confirm.warnings.codexLoadedCount })}
@@ -63,9 +63,9 @@ export default function ConfirmDialog() {
         </div>
       )}
       {/* 逐项清单：限高滚动，多选几百项也撑不爆弹窗 */}
-      <ul className="mb-5 max-h-[40vh] divide-y divide-divider overflow-y-auto rounded-control border border-border">
+      <ul className="mb-6 max-h-[40vh] divide-y divide-divider overflow-y-auto rounded-[10px] border border-border">
         {confirm.items.map((it, i) => (
-          <li key={i} className="flex items-center justify-between gap-3 px-3 py-1.5">
+          <li key={i} className="flex items-center justify-between gap-3 px-3.5 py-2">
             <span className="min-w-0 truncate text-[13px] text-ink">{it.name}</span>
             <span className="shrink-0 text-[12px] tabular-nums text-ink-3">{fmtSize(it.sizeBytes)}</span>
           </li>

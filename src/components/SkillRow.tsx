@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { SkillRecord } from '../domain/types';
 import { fmtSize, useSkim } from '../store';
 import StatusControl from './StatusControl';
-import { Badge, Checkbox, IconAlert, IconLink, IconLock, shortenPath } from './ui';
+import { Badge, Checkbox, IconAlert, IconLock, shortenPath } from './ui';
 
 export default function SkillRow({ rec }: { rec: SkillRecord }) {
   const { t } = useTranslation();
@@ -36,15 +36,8 @@ export default function SkillRow({ rec }: { rec: SkillRecord }) {
       )}
 
       <div className={`min-w-0 flex-1 ${off ? 'opacity-45' : ''}`}>
-        <p className="flex items-center gap-1.5 text-[13px] font-medium leading-[1.4] text-ink">
+        <p className="flex items-center gap-1.5 text-[14px] font-medium leading-[1.4] text-ink">
           <span className="truncate">{rec.name}</span>
-          {rec.isSymlink && (
-            <span title={shortenPath(rec.realPath, home)}>
-              <Badge variant="outline">
-                <IconLink className="h-3 w-3" />
-              </Badge>
-            </span>
-          )}
           {rec.flags.duplicate && (
             <span title={t('badge.duplicateTitle')}>
               <Badge variant="gray">{t('badge.duplicate')}</Badge>
@@ -64,12 +57,16 @@ export default function SkillRow({ rec }: { rec: SkillRecord }) {
           )}
           {midTier && <Badge variant="accent">{t(`status.${rec.status}`)}</Badge>}
         </p>
-        <p className="truncate text-[12px] leading-[1.5] text-ink-2">
-          {rec.flags.strayFile ? t('row.strayDesc') : (rec.description ?? t('row.noDescription'))}
+        <p className="truncate text-[13px] leading-[1.5] text-ink-2">
+          {rec.flags.strayFile
+            ? t('row.strayDesc')
+            : rec.isSymlink
+              ? <span title={t('row.linkTitle', { path: shortenPath(rec.realPath, home) })}>→ {shortenPath(rec.realPath, home)}</span>
+              : (rec.description ?? t('row.noDescription'))}
         </p>
       </div>
 
-      <span className="shrink-0 text-[11px] tabular-nums text-ink-3">{fmtSize(rec.sizeBytes)}</span>
+      <span className="shrink-0 text-[12px] tabular-nums text-ink-3">{fmtSize(rec.sizeBytes)}</span>
 
       {!rec.flags.statusLocked && (
         <div className="shrink-0" onClick={(e) => e.stopPropagation()}>

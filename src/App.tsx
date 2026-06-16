@@ -43,6 +43,18 @@ export default function App() {
     return () => window.clearInterval(id);
   }, [intervalSec]);
 
+  // Dev: G 键切换 grid overlay（body.grid-on 驱动 CSS）
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (e.key === 'g' && !e.metaKey && !e.ctrlKey && target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+        document.body.classList.toggle('grid-on');
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   // locale 同步（SettingsView 只写 config，这里统一 changeLanguage）
   useEffect(() => {
     const target =
@@ -88,6 +100,8 @@ export default function App() {
       <ConfirmDialog />
       <FailureToast />
       <BusyOverlay />
+      {/* Dev: baseline + column overlay — press G to toggle */}
+      <div className="grid-baseline" aria-hidden="true" />
     </div>
     </MotionConfig>
   );

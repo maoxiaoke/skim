@@ -65,7 +65,7 @@ const BADGE_CLS: Record<BadgeVariant, string> = {
 export function Badge({ variant = 'outline', children }: { variant?: BadgeVariant; children: ReactNode }) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 text-[10px] font-medium leading-[1.4] ${BADGE_CLS[variant]}`}
+      className={`inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-[1.4] ${BADGE_CLS[variant]}`}
     >
       {children}
     </span>
@@ -220,10 +220,10 @@ export function IconButton({
 export type ButtonVariant = 'secondary' | 'primary' | 'danger' | 'dangerSolid';
 
 const BUTTON_CLS: Record<ButtonVariant, string> = {
-  secondary: 'border border-border bg-app text-ink hover:bg-hover',
-  primary: 'bg-accent text-white hover:bg-accent/90',
-  danger: 'text-warning hover:bg-warning-soft',
-  dangerSolid: 'bg-warning text-white hover:bg-warning/90',
+  secondary: 'border border-border bg-app text-ink hover:bg-hover rounded-control',
+  primary: 'bg-accent text-white hover:bg-accent/90 rounded-full',
+  danger: 'text-warning hover:bg-warning-soft rounded-control',
+  dangerSolid: 'bg-warning text-white hover:bg-warning/90 rounded-full',
 };
 
 export function Button({
@@ -247,8 +247,8 @@ export function Button({
         e.stopPropagation();
         onClick?.();
       }}
-      className={`pressable inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-control px-2.5 text-[12px] font-medium disabled:cursor-default disabled:opacity-40 ${
-        compact ? 'h-[26px]' : 'h-7'
+      className={`pressable inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 px-3 text-[13px] font-medium disabled:cursor-default disabled:opacity-40 ${
+        compact ? 'h-7' : 'h-8'
       } ${BUTTON_CLS[variant]}`}
     >
       {children}
@@ -289,7 +289,7 @@ export function ViewScroll({
                 onClick={toggleSidebar}
                 aria-label={t('nav.toggleSidebar')}
                 title={t('nav.toggleSidebar')}
-                className="pressable mt-0.5 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-ink-3 hover:bg-hover hover:text-ink-2"
+                className="pressable mt-0.5 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-[8px] text-ink-3 hover:bg-hover hover:text-ink-2"
               >
                 <IconPanelLeft className="h-4 w-4" />
               </button>
@@ -304,7 +304,15 @@ export function ViewScroll({
         className={`min-h-0 flex-1 overflow-y-auto px-6 ${bottomPad ?? 'pb-16'}`}
         onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}
       >
-        <div className="mx-auto w-full max-w-[720px] pt-1">{children}</div>
+        {/* column overlay lives INSIDE this same max-w box — so its columns = content columns (§2.2) */}
+        <div className="relative mx-auto w-full max-w-[720px] pt-1">
+          <div className="grid-overlay" aria-hidden="true">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="grid-overlay-col" />
+            ))}
+          </div>
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -458,8 +466,8 @@ export function Dropdown<T extends string>({
         aria-expanded={open}
         aria-label={ariaLabel}
         onClick={() => setOpen((o) => !o)}
-        className={`flex cursor-pointer items-center gap-1.5 rounded-control border border-border bg-app px-2 text-[12px] text-ink transition-colors duration-150 hover:bg-hover ${
-          compact ? 'h-[26px]' : 'h-[27px]'
+        className={`flex cursor-pointer items-center gap-1.5 rounded-control border border-border bg-app px-2.5 text-[13px] text-ink transition-colors duration-150 hover:bg-hover ${
+          compact ? 'h-7' : 'h-8'
         }`}
       >
         {buttonLabel ?? current?.label}
@@ -481,7 +489,7 @@ export function Dropdown<T extends string>({
             }}
             className={`pop-in z-50 ${alignRight ? 'origin-top-right' : 'origin-top-left'} ${
               menuWidth ?? 'w-56'
-            } overflow-hidden rounded-card border border-border bg-app py-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.08)]`}
+            } overflow-hidden rounded-card border border-border bg-app py-1 shadow-[0_4px_16px_rgba(13,13,13,0.08)]`}
           >
             {items.map((it) => (
               <button
@@ -493,12 +501,12 @@ export function Dropdown<T extends string>({
                   setOpen(false);
                   onSelect(it.value);
                 }}
-                className="flex w-full cursor-pointer items-start justify-between gap-3 px-3 py-1.5 text-left transition-colors duration-150 hover:bg-sidebar"
+                className="flex w-full cursor-pointer items-start justify-between gap-3 px-3 py-2 text-left transition-colors duration-150 hover:bg-hover"
               >
                 <span className="min-w-0">
-                  <span className="block text-[12px] font-medium leading-[1.4] text-ink">{it.label}</span>
+                  <span className="block text-[13px] font-medium leading-[1.4] text-ink">{it.label}</span>
                   {it.description && (
-                    <span className="block text-[11px] leading-[1.4] text-ink-2">{it.description}</span>
+                    <span className="block text-[12px] leading-[1.4] text-ink-2">{it.description}</span>
                   )}
                 </span>
                 {it.value === value && <IconCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" />}
@@ -538,7 +546,7 @@ export function ModalShell({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.98 }}
         transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
-        className={`${width ?? 'w-[400px]'} rounded-card border border-border bg-app p-4 shadow-[0_8px_32px_rgba(0,0,0,0.10)]`}
+        className={`${width ?? 'w-[440px]'} rounded-[16px] border border-border bg-app p-6 shadow-[0_8px_32px_rgba(13,13,13,0.10)]`}
         onMouseDown={(e) => e.stopPropagation()}
       >
         {children}

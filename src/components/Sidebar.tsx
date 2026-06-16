@@ -35,12 +35,12 @@ function SideItem({
       type="button"
       onClick={onClick}
       aria-current={active ? 'true' : undefined}
-      className={`flex h-[30px] w-full cursor-pointer items-center gap-2 rounded-control px-2 text-left transition-colors duration-150 ${
+      className={`flex h-8 w-full cursor-pointer items-center gap-2 rounded-[8px] px-2.5 text-left transition-colors duration-150 ${
         active ? 'bg-selected' : 'hover:bg-hover active:bg-selected'
       }`}
     >
       <span className={`shrink-0 ${active ? 'text-ink' : 'text-ink-2'}`}>{icon}</span>
-      <span className={`min-w-0 flex-1 truncate text-[13px] ${muted ? 'text-ink-2' : 'text-ink'} ${active ? 'font-medium' : ''}`}>
+      <span className={`min-w-0 flex-1 truncate text-[13px] ${muted ? 'text-ink-3' : active ? 'text-ink font-medium' : 'text-ink-2'}`}>
         {label}
       </span>
       {count !== undefined && <span className="shrink-0 text-[11px] tabular-nums text-ink-3">{count}</span>}
@@ -98,8 +98,8 @@ export default function Sidebar() {
           <IconPanelLeft className="h-4 w-4" />
         </button>
       )}
-      <div data-tauri-drag-region className="px-3 pb-1.5">
-        <h1 className="pointer-events-none text-[13px] font-semibold leading-[1.3] text-ink">{t('app.name')}</h1>
+      <div data-tauri-drag-region className="px-3.5 pb-2">
+        <h1 className="pointer-events-none text-[14px] font-semibold leading-[1.3] tracking-[-0.01em] text-ink">{t('app.name')}</h1>
       </div>
 
       <nav className="flex-1 space-y-4 overflow-y-auto px-2.5 pt-1.5">
@@ -115,7 +115,7 @@ export default function Sidebar() {
         </div>
 
         <div>
-          <p className="px-2 pb-1 text-[11px] font-medium text-ink-3">{t('nav.agents')}</p>
+          <p className="px-2.5 pb-1 text-[11px] font-medium uppercase tracking-[0.06em] text-ink-3">{t('nav.agents')}</p>
           <SideItem
             active={view === 'skills' && agentFilter === 'claude'}
             onClick={() => goSkills('claude')}
@@ -133,7 +133,7 @@ export default function Sidebar() {
         </div>
 
         <div>
-          <p className="px-2 pb-1 text-[11px] font-medium text-ink-3">{t('nav.projects')}</p>
+          <p className="px-2.5 pb-1 text-[11px] font-medium uppercase tracking-[0.06em] text-ink-3">{t('nav.projects')}</p>
           {visibleProjects.map((p) => (
             <SideItem
               key={p.path}

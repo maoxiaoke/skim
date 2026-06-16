@@ -1,28 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 @import 'tailwindcss';
+
+/* § Grid system — Müller-Brockmann: 12 cols, 8px baseline, single source of truth */
+:root {
+  --bl: 8px;            /* baseline unit */
+  --lh: 24px;           /* leading = 3 × --bl */
+  --grid-gutter: 16px;  /* column gap = 2 × --bl */
+  --grid-maxw: 720px;   /* content type area */
+}
+
+/* 12-column grid container — wrap ViewScroll content or SettingsView cards */
+.grid-content {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--grid-gutter);
+  position: relative;
+}
+
+/* Subgrid band — each horizontal row re-exposes the parent grid columns */
+.grid-band {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  column-gap: var(--grid-gutter);
+  align-items: center;
+}
+
+@supports not (grid-template-columns: subgrid) {
+  .grid-band {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+/* Dev overlay: column fields — must live inside the SAME content box (§2.2) */
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--grid-gutter);
+  pointer-events: none;
+  z-index: 9000;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+body.grid-on .grid-overlay { opacity: 1; }
+
+.grid-overlay-col {
+  background: rgba(16, 163, 127, 0.07);
+  border-left: 1px solid rgba(16, 163, 127, 0.22);
+  border-right: 1px solid rgba(16, 163, 127, 0.22);
+  min-height: 100%;
+}
+
+/* Dev overlay: baseline lines — full-screen fixed (independent of content box) */
+.grid-baseline {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8999;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent calc(var(--lh) - 1px),
+    rgba(16, 163, 127, 0.10) calc(var(--lh) - 1px),
+    rgba(16, 163, 127, 0.10) var(--lh)
+  );
+}
+
+body.grid-on .grid-baseline { opacity: 1; }
 
 /* design.md §1 — color tokens (single source of truth) */
 @theme {
   --color-app: #ffffff;
-  --color-sidebar: #f7f7f8;
-  --color-hover: #f2f2f3;
-  --color-selected: #ececee;
-  --color-inset: #f6f6f7;
-  --color-border: #e5e5e7;
-  --color-divider: #e8e8ea;
-  --color-ink: #1a1a1a;
-  --color-ink-2: #6e6e73;
-  --color-ink-3: #9a9aa0;
-  --color-accent: #007aff;
-  --color-accent-soft: #eef6ff;
-  --color-warning: #e8590c;
-  --color-warning-soft: #fff1e8;
-  --color-toggle-off: #e9e9eb;
+  --color-sidebar: #fafafa;
+  --color-hover: #f5f5f5;
+  --color-selected: #ececec;
+  --color-inset: #f5f5f5;
+  --color-border: #e5e5e5;
+  --color-divider: #ededed;
+  --color-ink: #0d0d0d;
+  --color-ink-2: #6e6e6e;
+  --color-ink-3: #9b9b9b;
+  --color-accent: #10a37f;
+  --color-accent-soft: #e8f5f0;
+  --color-warning: #ef4146;
+  --color-warning-soft: #fef2f2;
+  --color-toggle-off: #e5e5e5;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, 'PingFang SC', sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: Inter, system-ui, -apple-system, 'Segoe UI', 'PingFang SC', sans-serif;
+  --font-mono: ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace;
 
-  --radius-card: 10px;
-  --radius-control: 6px;
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-pill: 9999px;
 }
 
 html,
@@ -65,12 +139,14 @@ body {
 /* design.md §7 — visible focus ring（input/textarea 用 border 表达聚焦，不需要额外 outline） */
 :focus-visible {
   outline: 2px solid var(--color-accent);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
 input:focus-visible,
 textarea:focus-visible {
   outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.12);
 }
 
 /* 强 ease-out（内置 ease-out 太弱，emil-design-eng）：起步快、收尾稳 */

@@ -53,7 +53,7 @@ export default function SettingsView() {
   return (
     <ViewScroll
       header={
-        <h2 className="text-[22px] font-semibold leading-[1.3] tracking-[-0.01em] text-ink">
+        <h2 className="text-[24px] font-semibold leading-[32px] tracking-[-0.015em] text-ink">
           {t('settings.title')}
         </h2>
       }
@@ -63,9 +63,9 @@ export default function SettingsView() {
         {/* Projects：列表多时卡内滚动，不顶走下方 Refresh/Advanced */}
         <Card title={t('settings.projects')}>
           {projects.length === 0 ? (
-            <div className="px-4 py-3 text-[13px] text-ink-3">{t('settings.noProjects')}</div>
+            <div className="col-span-full px-4 py-3 text-[13px] text-ink-3">{t('settings.noProjects')}</div>
           ) : (
-            <div className="max-h-[280px] divide-y divide-divider overflow-y-auto">
+            <div className="col-span-full max-h-[280px] divide-y divide-divider overflow-y-auto">
               {projects.map((p) => (
                 <div key={p.path} className="flex items-center gap-3 px-4 py-3">
                   <div className="min-w-0 flex-1">
@@ -115,7 +115,7 @@ export default function SettingsView() {
                   if (e.key === 'Enter') commitInterval();
                 }}
                 aria-label={t('settings.interval')}
-                className="h-8 w-20 cursor-text rounded-control border border-border bg-app px-2.5 text-right text-[13px] text-ink focus:border-accent"
+                className="h-9 w-24 cursor-text rounded-control border border-border bg-app px-3 text-right text-[14px] text-ink focus:border-accent focus:outline-none focus:ring-[3px] focus:ring-accent/10"
               />
             }
           />
@@ -173,21 +173,27 @@ export default function SettingsView() {
 
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="mb-7">
-      <p className="mb-1.5 text-[13px] font-medium text-ink-3">{title}</p>
-      <div className="divide-y divide-divider overflow-hidden rounded-card border border-border bg-app">{children}</div>
+    <section className="mb-8">
+      <p className="mb-2 text-[12px] font-medium uppercase tracking-[0.06em] text-ink-3">{title}</p>
+      {/* grid-content: 12 cols, 16px gap — SettingRow bands share this subgrid */}
+      <div className="grid-content divide-y divide-divider overflow-hidden rounded-card border border-border bg-app">{children}</div>
     </section>
   );
 }
 
 function SettingRow({ title, desc, control }: { title: string; desc: string; control: ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-6 px-4 py-3">
-      <div className="min-w-0">
-        <p className="text-[15px] font-medium leading-[1.4] text-ink">{title}</p>
-        <p className="text-[13px] leading-[1.55] text-ink-2">{desc}</p>
+    /* grid-band: spans all 12 cols, re-exposes subgrid for children */
+    <div className="grid-band px-4 py-4">
+      {/* label: cols 1–8 */}
+      <div className="min-w-0" style={{ gridColumn: '1 / 9' }}>
+        <p className="text-[14px] font-medium leading-[24px] text-ink">{title}</p>
+        <p className="text-[13px] leading-[20px] text-ink-2">{desc}</p>
       </div>
-      <div className="shrink-0">{control}</div>
+      {/* control: cols 9–12, right-aligned */}
+      <div className="flex items-center justify-end" style={{ gridColumn: '9 / 13' }}>
+        {control}
+      </div>
     </div>
   );
 }
