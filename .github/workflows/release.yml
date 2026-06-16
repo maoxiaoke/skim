@@ -93,6 +93,13 @@ jobs:
           APPLE_API_KEY_PATH: ~/.private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
         run: pnpm tauri build --target ${{ matrix.target }}
 
+      - name: List bundle output
+        run: |
+          echo "=== bundle/dmg ==="
+          ls -la src-tauri/target/${{ matrix.target }}/release/bundle/dmg/ || true
+          echo "=== bundle/macos ==="
+          ls -la src-tauri/target/${{ matrix.target }}/release/bundle/macos/ || true
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
