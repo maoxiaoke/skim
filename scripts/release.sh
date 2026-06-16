@@ -1,19 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: ./scripts/release.sh <version>
-#   e.g. ./scripts/release.sh 0.2.18
+# Usage: ./scripts/release.sh [version]
+#   ./scripts/release.sh          — auto-increment patch (0.2.17 → 0.2.18)
+#   ./scripts/release.sh 0.3.0    — explicit version
 #
 # What it does:
 #   1. Bumps version in tauri.conf.json, Cargo.toml, package.json
 #   2. Commits, pushes
 #   3. Tags v<version>, pushes tag → triggers CI release build
 
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$REPO_ROOT"
+
 VERSION="${1:-}"
 
 if [[ -z "$VERSION" ]]; then
-  echo "Usage: $0 <version>   e.g. $0 0.2.18" >&2
-  exit 1
+  CURRENT=$(grep '"version"' src-tauri/tauri.conf.json | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+  IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+  VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+  echo "Auto-incrementing $CURRENT → $VERSION"
 fi
 
 # Validate semver shape
@@ -21,9 +27,6 @@ if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "Error: version must be X.Y.Z (got '$VERSION')" >&2
   exit 1
 fi
-
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$REPO_ROOT"
 
 # Guard: must be on main with a clean working tree
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
