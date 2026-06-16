@@ -1,0 +1,44 @@
+name: Bump & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 0.2.18)'
+        required: true
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate version
+        run: |
+          if ! echo "${{ inputs.version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Error: version must be X.Y.Z" && exit 1
+          fi
+          if git rev-parse "v${{ inputs.version }}" &>/dev/null 2>&1; then
+            echo "Error: tag v${{ inputs.version }} already exists" && exit 1
+          fi
+
+      - name: Bump versions
+        run: |
+          V="${{ inputs.version }}"
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$V\"/" src-tauri/tauri.conf.json
+          sed -i "1,/^version = /s/^version = \"[^\"]*\"/version = \"$V\"/" src-tauri/Cargo.toml
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$V\"/" package.json
+
+      - name: Commit & tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src-tauri/tauri.conf.json src-tauri/Cargo.toml package.json
+          git commit -m "chore: release v${{ inputs.version }}"
+          git push
+          git tag "v${{ inputs.version }}"
+          git push origin "v${{ inputs.version }}"
