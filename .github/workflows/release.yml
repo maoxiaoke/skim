@@ -95,15 +95,14 @@ jobs:
 
       - name: List bundle output
         run: |
-          echo "=== bundle/dmg ==="
-          ls -la src-tauri/target/${{ matrix.target }}/release/bundle/dmg/ || true
-          echo "=== bundle/macos ==="
-          ls -la src-tauri/target/${{ matrix.target }}/release/bundle/macos/ || true
+          echo "=== bundle/ ==="
+          find src-tauri/target/${{ matrix.target }}/release/bundle/ -type f | sort
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: skim-${{ matrix.arch }}
+          if-no-files-found: warn
           path: |
             src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
             src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz
