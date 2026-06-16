@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getVersion } from '@tauri-apps/api/app';
 import type { SkimConfig } from '../domain/types';
 import { useSkim } from '../store';
 import { Badge, Button, Dropdown, shortenPath, Toggle, ViewScroll } from './ui';
@@ -24,6 +25,8 @@ export default function SettingsView() {
   const update = useSkim((s) => s.update);
   const checkUpdate = useSkim((s) => s.checkUpdate);
   const [checking, setChecking] = useState(false);
+  const [currentVersion, setCurrentVersion] = useState<string | null>(null);
+  useEffect(() => { void getVersion().then(setCurrentVersion); }, []);
 
   const handleCheckUpdate = async () => {
     setChecking(true);
@@ -158,7 +161,11 @@ export default function SettingsView() {
         <Card title={t('settings.updates')}>
           <SettingRow
             title={t('settings.checkUpdates')}
-            desc={update ? t('settings.updateAvailable', { version: update.version }) : t('settings.checkUpdatesDesc')}
+            desc={update
+              ? t('settings.updateAvailable', { version: update.version })
+              : currentVersion
+                ? t('settings.currentVersion', { version: currentVersion })
+                : t('settings.checkUpdatesDesc')}
             control={
               <Button compact onClick={() => void handleCheckUpdate()} disabled={checking}>
                 {checking ? t('settings.checking') : t('settings.checkNow')}

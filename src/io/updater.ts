@@ -1,4 +1,5 @@
 import { check } from '@tauri-apps/plugin-updater';
+import { relaunch } from '@tauri-apps/plugin-process';
 
 export interface UpdateInfo {
   version: string;
@@ -28,4 +29,5 @@ export async function downloadAndInstall(
       onProgress(event.data.chunkLength, null);
     }
   });
+  await relaunch();
 }

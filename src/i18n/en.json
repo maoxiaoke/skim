@@ -171,7 +171,8 @@
     "checkUpdatesDesc": "Skim also checks automatically on launch.",
     "checkNow": "Check now",
     "checking": "Checking…",
-    "updateAvailable": "{{version}} is available — see the banner above."
+    "updateAvailable": "{{version}} is available — see the banner above.",
+    "currentVersion": "You're on v{{version}}. Skim also checks automatically on launch."
   },
   "lang": {
     "auto": "Auto (system)",
