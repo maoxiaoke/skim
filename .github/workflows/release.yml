@@ -115,15 +115,22 @@ jobs:
           echo "=== updater artifacts ==="
           ls -la "$BUNDLE_DIR"/*.tar.gz "$BUNDLE_DIR"/*.tar.gz.sig
 
+      - name: Stage artifacts
+        run: |
+          mkdir -p dist
+          BUNDLE_DIR="src-tauri/target/${{ matrix.target }}/release/bundle"
+          cp "$BUNDLE_DIR"/dmg/*.dmg dist/
+          cp "$BUNDLE_DIR"/macos/*.tar.gz dist/
+          cp "$BUNDLE_DIR"/macos/*.tar.gz.sig dist/
+          echo "=== dist/ ==="
+          ls -la dist/
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: skim-${{ matrix.arch }}
-          if-no-files-found: warn
-          path: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
-            src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz
-            src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz.sig
+          if-no-files-found: error
+          path: dist/
 
   publish:
     needs: build
