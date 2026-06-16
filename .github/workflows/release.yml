@@ -107,13 +107,11 @@ jobs:
           APP_NAME=$(ls "$BUNDLE_DIR" | grep '\.app$' | head -1)
           echo "Bundling $APP_NAME"
           tar -czf "$BUNDLE_DIR/${APP_NAME}.tar.gz" -C "$BUNDLE_DIR" "$APP_NAME"
-          # Sign the tar.gz with the Ed25519 updater key
-          echo "$TAURI_SIGNING_PRIVATE_KEY" > /tmp/updater.key
+          # Sign the tar.gz with the Ed25519 updater key (-k takes key content, not a path)
           pnpm tauri signer sign \
-            -k /tmp/updater.key \
+            -k "$TAURI_SIGNING_PRIVATE_KEY" \
             -p "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" \
             "$BUNDLE_DIR/${APP_NAME}.tar.gz"
-          rm /tmp/updater.key
           echo "=== updater artifacts ==="
           ls -la "$BUNDLE_DIR"/*.tar.gz "$BUNDLE_DIR"/*.tar.gz.sig
 
