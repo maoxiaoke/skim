@@ -1,9 +1,13 @@
 import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 
+/** GitHub release tag page — where the full changelog lives. */
+const RELEASE_TAG_BASE = 'https://github.com/maoxiaoke/skim/releases/tag';
+
 export interface UpdateInfo {
   version: string;
   body: string | null;
+  notesUrl: string;
 }
 
 /** Returns update info if a newer version is available, null otherwise. */
@@ -11,7 +15,11 @@ export async function checkForUpdate(): Promise<UpdateInfo | null> {
   try {
     const update = await check();
     if (!update?.available) return null;
-    return { version: update.version, body: update.body ?? null };
+    return {
+      version: update.version,
+      body: update.body ?? null,
+      notesUrl: `${RELEASE_TAG_BASE}/v${update.version}`,
+    };
   } catch {
     return null;
   }

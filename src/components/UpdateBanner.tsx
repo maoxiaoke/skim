@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { useSkim } from '../store';
@@ -12,7 +12,6 @@ export default function UpdateBanner() {
   const updateError = useSkim((s) => s.updateError);
   const dismissUpdate = useSkim((s) => s.dismissUpdate);
   const installUpdate = useSkim((s) => s.installUpdate);
-  const [showNotes, setShowNotes] = useState(false);
 
   const visible = !!update && !updateDismissed;
 
@@ -33,14 +32,12 @@ export default function UpdateBanner() {
             <div className="flex items-center gap-3">
               <span className="flex-1 text-ink">
                 <span className="font-medium">{t('update.available', { version: update.version })}</span>
-                {update.body && (
-                  <button
-                    onClick={() => setShowNotes((v) => !v)}
-                    className="ml-2 text-accent underline-offset-2 hover:underline"
-                  >
-                    {showNotes ? t('update.hideNotes') : t('update.showNotes')}
-                  </button>
-                )}
+                <button
+                  onClick={() => void openUrl(update.notesUrl)}
+                  className="ml-2 text-accent underline-offset-2 hover:underline"
+                >
+                  {t('update.showNotes')}
+                </button>
               </span>
               <button
                 onClick={() => void installUpdate()}
@@ -53,9 +50,6 @@ export default function UpdateBanner() {
                 <IconX className="h-4 w-4 text-ink-2" />
               </IconButton>
             </div>
-            {showNotes && update.body && (
-              <p className="mt-1.5 whitespace-pre-wrap text-[12px] text-ink-2">{update.body}</p>
-            )}
             {updateError && (
               <p className="mt-1.5 whitespace-pre-wrap text-[12px] text-red-600">
                 {t('update.failed')}: {updateError}
