@@ -316,11 +316,17 @@ pub fn archive_move(src: String, dst: String, manifest_path: String, manifest_js
     Ok(())
 }
 
+/// 用 lstat（symlink_metadata）而非 exists() 判断路径是否存在：归档源目录后，指向它的
+/// 软链已成悬空链，exists() 会跟随软链解析到已删目标而误判为「不存在」。lstat 只看条目本身。
+fn path_present(p: &Path) -> bool {
+    fs::symlink_metadata(p).is_ok()
+}
+
 #[tauri::command]
 pub fn trash_path(path: String) -> Result<()> {
     let p = Path::new(&path);
     assert_allowed(p)?;
-    if !p.exists() {
+    if !path_present(p) {
         return Err(SkimError::Invalid(format!("path does not exist: {path}")));
     }
     // G2 承诺：trash 失败绝不回退到删除
@@ -524,5 +530,27 @@ enabled = false
         fs::create_dir_all(&b).unwrap();
         let err = move_dir(&a, &b).unwrap_err();
         assert_eq!(err.code(), "CONFLICT");
+    }
+
+    // 归档源目录被移走后，指向它的软链成为悬空链；trash 前的存在性校验必须用 lstat，
+    // 否则 exists() 跟随软链失败会误报 path does not exist（archive 软链清理步骤的回归）。
+    #[test]
+    #[cfg(unix)]
+    fn path_present_true_for_dangling_symlink() {
+        let tmp = tempfile::tempdir().unwrap();
+        let target = tmp.path().join("source");
+        let link = tmp.path().join("link");
+        fs::create_dir_all(&target).unwrap();
+        std::os::unix::fs::symlink(&target, &link).unwrap();
+        // 源目录移走 → 软链悬空
+        fs::remove_dir_all(&target).unwrap();
+        assert!(!link.exists(), "exists() 跟随软链应失败");
+        assert!(path_present(&link), "lstat 应认定悬空软链仍存在");
+    }
+
+    #[test]
+    fn path_present_false_for_missing() {
+        let tmp = tempfile::tempdir().unwrap();
+        assert!(!path_present(&tmp.path().join("nope")));
     }
 }
