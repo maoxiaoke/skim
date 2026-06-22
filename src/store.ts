@@ -95,6 +95,7 @@ interface SkimState {
   update: UpdateInfo | null;
   updateDismissed: boolean;
   updateInstalling: boolean;
+  updateError: string | null;
   checkUpdate: () => Promise<void>;
   dismissUpdate: () => void;
   installUpdate: () => Promise<void>;
@@ -171,6 +172,7 @@ export const useSkim = create<SkimState>((set, get) => ({
   update: null,
   updateDismissed: false,
   updateInstalling: false,
+  updateError: null,
 
   refresh: async () => {
     set({ loading: true, error: null });
@@ -329,9 +331,14 @@ export const useSkim = create<SkimState>((set, get) => ({
   dismissUpdate: () => set({ updateDismissed: true }),
 
   installUpdate: async () => {
-    set({ updateInstalling: true });
+    set({ updateInstalling: true, updateError: null });
     try {
       await downloadAndInstall(() => {});
+      // 成功时 relaunch 会终止进程，正常不会执行到这里。
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error('[updater] install failed:', e);
+      set({ updateError: msg });
     } finally {
       set({ updateInstalling: false });
     }

@@ -17,17 +17,40 @@ export async function checkForUpdate(): Promise<UpdateInfo | null> {
   }
 }
 
-/** Downloads and installs the pending update, then requests a relaunch. */
+/** Downloads and installs the pending update, then requests a relaunch.
+ *  Errors are re-thrown with a phase tag so the UI can show what actually failed
+ *  (download/verify vs. install vs. relaunch) instead of swallowing them silently. */
 export async function downloadAndInstall(
   onProgress: (downloaded: number, total: number | null) => void,
 ): Promise<void> {
-  const update = await check();
+  let update;
+  try {
+    update = await check();
+  } catch (e) {
+    throw new Error(`check failed: ${errMsg(e)}`);
+  }
   if (!update?.available) return;
 
-  await update.downloadAndInstall((event) => {
-    if (event.event === 'Progress') {
-      onProgress(event.data.chunkLength, null);
-    }
-  });
-  await relaunch();
+  try {
+    await update.downloadAndInstall((event) => {
+      if (event.event === 'Progress') {
+        onProgress(event.data.chunkLength, null);
+      }
+    });
+  } catch (e) {
+    throw new Error(`download/install failed: ${errMsg(e)}`);
+  }
+
+  try {
+    await relaunch();
+  } catch (e) {
+    // 安装已成功，仅重启失败：提示用户手动重启，而非把整次更新判定为失败。
+    throw new Error(`installed, but relaunch failed — quit and reopen Skim manually: ${errMsg(e)}`);
+  }
+}
+
+function errMsg(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string') return e;
+  return JSON.stringify(e);
 }

@@ -9,6 +9,7 @@ export default function UpdateBanner() {
   const update = useSkim((s) => s.update);
   const updateDismissed = useSkim((s) => s.updateDismissed);
   const updateInstalling = useSkim((s) => s.updateInstalling);
+  const updateError = useSkim((s) => s.updateError);
   const dismissUpdate = useSkim((s) => s.dismissUpdate);
   const installUpdate = useSkim((s) => s.installUpdate);
   const [showNotes, setShowNotes] = useState(false);
@@ -54,6 +55,11 @@ export default function UpdateBanner() {
             </div>
             {showNotes && update.body && (
               <p className="mt-1.5 whitespace-pre-wrap text-[12px] text-ink-2">{update.body}</p>
+            )}
+            {updateError && (
+              <p className="mt-1.5 whitespace-pre-wrap text-[12px] text-red-600">
+                {t('update.failed')}: {updateError}
+              </p>
             )}
           </div>
         </motion.div>

@@ -139,7 +139,8 @@
     "installing": "安装中…",
     "dismiss": "关闭更新提示",
     "showNotes": "更新说明",
-    "hideNotes": "收起说明"
+    "hideNotes": "收起说明",
+    "failed": "更新失败"
   },
   "settings": {
     "title": "设置",

@@ -144,7 +144,8 @@
     "installing": "Installing…",
     "dismiss": "Dismiss update banner",
     "showNotes": "Release notes",
-    "hideNotes": "Hide notes"
+    "hideNotes": "Hide notes",
+    "failed": "Update failed"
   },
   "settings": {
     "title": "Settings",
