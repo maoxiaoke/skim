@@ -38,7 +38,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "untrusted comment: minisign public key: FF2B7F80A43625A\nRWRaYkMK+LfyD9Ilkp9D6Ztze/iTxF7XLuX3EemTZ4lD4HPBXEZ4m9xs\n",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZGMkI3RjgwQTQzNjI1QQpSV1JhWWtNSytMZnlEOUlsa3A5RDZadHplL2lUeEY3WEx1WDNFZW1UWjRsRDRIUEJYRVo0bTl4cwo=",
       "endpoints": [
         "https://github.com/maoxiaoke/skim/releases/latest/download/latest.json"
       ]
