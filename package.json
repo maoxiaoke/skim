@@ -2,7 +2,7 @@
   "name": "skim",
   "productName": "Skim",
   "private": true,
-  "version": "0.2.18",
+  "version": "0.2.19",
   "description": "Cross-agent local AI skills manager for Claude Code & Codex",
   "type": "module",
   "scripts": {
