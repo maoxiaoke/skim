@@ -263,6 +263,23 @@ pub fn write_skim_config(content: String) -> Result<()> {
 
 // ---------- 归档 / 删除 / 恢复 ----------
 
+/// 移到废纸篓。trash crate 在 macOS 上默认走 Finder（osascript `tell application
+/// "Finder" to delete`），会弹出 Finder 自动化授权 + Touch ID 提示。改用 NsFileManager
+/// 后端（直接调 NSFileManager.trashItemAtURL），无 Finder、无声音、无授权弹窗。
+fn trash_delete(p: &Path) -> Result<()> {
+    #[cfg(target_os = "macos")]
+    {
+        use trash::macos::{DeleteMethod, TrashContextExtMacos};
+        let mut ctx = trash::TrashContext::default();
+        ctx.set_delete_method(DeleteMethod::NsFileManager);
+        ctx.delete(p).map_err(|e| SkimError::TrashFailed(e.to_string()))
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        trash::delete(p).map_err(|e| SkimError::TrashFailed(e.to_string()))
+    }
+}
+
 fn move_dir(src: &Path, dst: &Path) -> Result<()> {
     if dst.exists() {
         return Err(SkimError::Conflict);
@@ -280,7 +297,7 @@ fn move_dir(src: &Path, dst: &Path) -> Result<()> {
             if ss != ds || sc != dc {
                 return Err(SkimError::Io(std::io::Error::other("copy verification failed")));
             }
-            trash::delete(src).map_err(|e| SkimError::TrashFailed(e.to_string()))?;
+            trash_delete(src)?;
             Ok(())
         }
     }
@@ -330,7 +347,7 @@ pub fn trash_path(path: String) -> Result<()> {
         return Err(SkimError::Invalid(format!("path does not exist: {path}")));
     }
     // G2 承诺：trash 失败绝不回退到删除
-    trash::delete(p).map_err(|e| SkimError::TrashFailed(e.to_string()))
+    trash_delete(p)
 }
 
 #[derive(Deserialize, PartialEq)]
@@ -351,7 +368,7 @@ pub fn restore_move(src: String, dst: String, mode: ConflictMode) -> Result<Stri
         match mode {
             ConflictMode::Fail => return Err(SkimError::Conflict),
             ConflictMode::Overwrite => {
-                trash::delete(&d).map_err(|e| SkimError::TrashFailed(e.to_string()))?;
+                trash_delete(&d)?;
             }
             ConflictMode::Rename => {
                 let base = d.clone();
