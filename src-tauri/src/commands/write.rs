@@ -333,20 +333,22 @@ pub fn archive_move(src: String, dst: String, manifest_path: String, manifest_js
     Ok(())
 }
 
-/// 用 lstat（symlink_metadata）而非 exists() 判断路径是否存在：归档源目录后，指向它的
-/// 软链已成悬空链，exists() 会跟随软链解析到已删目标而误判为「不存在」。lstat 只看条目本身。
-fn path_present(p: &Path) -> bool {
-    fs::symlink_metadata(p).is_ok()
-}
-
 #[tauri::command]
 pub fn trash_path(path: String) -> Result<()> {
     let p = Path::new(&path);
     assert_allowed(p)?;
-    if !path_present(p) {
-        return Err(SkimError::Invalid(format!("path does not exist: {path}")));
+    // lstat（不跟随软链）：归档/删除实体后，指向它的软链已成悬空链，exists() 会跟随
+    // 软链解析到已删目标而误判「不存在」；lstat 只看条目本身是否存在。
+    let meta = fs::symlink_metadata(p)
+        .map_err(|_| SkimError::Invalid(format!("path does not exist: {path}")))?;
+    if meta.file_type().is_symlink() {
+        // 软链是零数据指针：实体已安全归档/独立存在，删链只需 unlink 这个指针本身。
+        // 不进废纸篓——trash 一条悬空软链没有恢复价值，还会触发 Finder/Touch ID 授权。
+        // unlink 只删这一条链接，绝非 rm -rf：不跟随、不递归、不碰 target。
+        fs::remove_file(p)?;
+        return Ok(());
     }
-    // G2 承诺：trash 失败绝不回退到删除
+    // 真实目录/文件：维持 G2 承诺 —— 一律 trash，绝不 rm。
     trash_delete(p)
 }
 
@@ -549,25 +551,46 @@ enabled = false
         assert_eq!(err.code(), "CONFLICT");
     }
 
-    // 归档源目录被移走后，指向它的软链成为悬空链；trash 前的存在性校验必须用 lstat，
-    // 否则 exists() 跟随软链失败会误报 path does not exist（archive 软链清理步骤的回归）。
+    // 清理软链安装时应 unlink（只摘除指针），且绝不波及它指向的真实实体。
     #[test]
     #[cfg(unix)]
-    fn path_present_true_for_dangling_symlink() {
+    fn trash_path_unlinks_symlink_keeps_target() {
         let tmp = tempfile::tempdir().unwrap();
-        let target = tmp.path().join("source");
-        let link = tmp.path().join("link");
+        let base = tmp.path().join(".skim"); // 路径含 .skim 段，过 assert_allowed
+        let target = base.join("real");
+        let link = base.join("link");
+        fs::create_dir_all(&target).unwrap();
+        fs::write(target.join("f.txt"), b"hi").unwrap();
+        std::os::unix::fs::symlink(&target, &link).unwrap();
+
+        trash_path(link.to_string_lossy().into_owned()).unwrap();
+
+        assert!(fs::symlink_metadata(&link).is_err(), "软链本身应被删除");
+        assert!(target.join("f.txt").exists(), "软链指向的实体不应被动到");
+    }
+
+    // 归档源目录被移走后软链悬空（exists() 会跟随解析失败）；仍应被 unlink 清掉。
+    #[test]
+    #[cfg(unix)]
+    fn trash_path_unlinks_dangling_symlink() {
+        let tmp = tempfile::tempdir().unwrap();
+        let base = tmp.path().join(".skim");
+        let target = base.join("gone");
+        let link = base.join("link");
         fs::create_dir_all(&target).unwrap();
         std::os::unix::fs::symlink(&target, &link).unwrap();
-        // 源目录移走 → 软链悬空
-        fs::remove_dir_all(&target).unwrap();
-        assert!(!link.exists(), "exists() 跟随软链应失败");
-        assert!(path_present(&link), "lstat 应认定悬空软链仍存在");
+        fs::remove_dir_all(&target).unwrap(); // 软链悬空
+        assert!(!link.exists(), "exists() 跟随悬空软链应失败");
+
+        trash_path(link.to_string_lossy().into_owned()).unwrap();
+        assert!(fs::symlink_metadata(&link).is_err(), "悬空软链应被 unlink 清掉");
     }
 
     #[test]
-    fn path_present_false_for_missing() {
+    fn trash_path_missing_errors() {
         let tmp = tempfile::tempdir().unwrap();
-        assert!(!path_present(&tmp.path().join("nope")));
+        let p = tmp.path().join(".skim/nope");
+        let err = trash_path(p.to_string_lossy().into_owned()).unwrap_err();
+        assert_eq!(err.code(), "INVALID");
     }
 }
